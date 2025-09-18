@@ -1,0 +1,221 @@
+<po-page-default>
+  <div class="page-header">
+    <div class="page-header_container po-lg-12">
+      <div class="title-container">
+        <h1 class="po-lg-auto">Solicitação de Novo Contrato</h1>
+        <po-button
+          class="po-lg-auto po-pull-right po-mr-1"
+          p-label="Voltar"
+          p-action="export"
+          p-kind="secondary"
+        ></po-button>
+      </div>
+      <div class="element"></div>
+    </div>
+  </div>
+
+  <div class="page-content po-lg-12">
+    <div class="po-md-12 stepper-container">
+      <po-stepper [p-step-size]="30" [p-align-center]="true">
+        <!-- STEP 1 -->
+        <po-step p-label="Possui contrato?">
+          <app-collapse title="Processos Origem de Suprimentos">
+            <div class="po-lg-12">
+              <po-input class="po-lg-6" p-label="SC nº:"></po-input>
+              <po-input
+                class="po-lg-6"
+                p-label="Pedido de Compras nº:"
+              ></po-input>
+              <po-checkbox
+                class="po-lg-8 po-mt-3 po-mb-3"
+                name="checkbox"
+                p-label="Serviço/fornecimento contratado diretamente pela área, descumprindo o Procedimento Interno PI-SUPRIM-01 (Procedimento Interno TOTVS para Compra de Produtos e Serviços.)"
+              >
+              </po-checkbox>
+              <po-textarea
+                class="po-lg-12"
+                name="textarea"
+                p-label="Justificativa (descumprimento da PI-SUPRIM-01):"
+                p-placeholder="Insira a justificativa"
+              >
+              </po-textarea>
+            </div>
+          </app-collapse>
+
+          <po-button
+            class="po-md-auto po-pull-right po-mt-3"
+            p-label="Não possuo"
+            p-kind="primary"
+          ></po-button>
+          <po-button
+            class="po-md-auto po-pull-right po-mt-3"
+            p-label="Possuo pedido de contrato"
+          ></po-button>
+        </po-step>
+
+        <!-- STEP 2 -->
+        <po-step p-label="Dados do solicitante/contratante">
+          <app-collapse title="Dados do Solicitante">
+            <div class="po-lg-12">
+              <po-input
+                class="po-lg-3"
+                p-label="Nome do solicitante"
+              ></po-input>
+              <po-email
+                class="po-lg-3"
+                p-label="E-mail do solicitante"
+              ></po-email>
+              <po-input class="po-lg-3" p-label="Área"></po-input>
+              <po-input
+                class="po-lg-3"
+                p-label="Gestor Responsável pelo contrato"
+              ></po-input>
+            </div>
+          </app-collapse>
+          <app-collapse title="Empresa contratada e contratante">
+            <div class="po-lg-12">
+              <po-input class="po-lg-8" p-label="Razão Social"></po-input>
+              <po-input class="po-lg-4" p-label="CNPJ"></po-input>
+              <po-input class="po-lg-4" p-label="Contato"></po-input>
+              <po-input class="po-lg-4" p-label="Telefone"></po-input>
+              <po-email class="po-lg-4" p-label="E-mail"></po-email>
+              <po-divider class="po-lg-12" p-label="Dados do contratante">
+              </po-divider>
+
+              <po-combo
+                class="po-lg-3"
+                p-label="Selecionar contratante"
+                [p-options]="[
+                  { value: 'TOTVS S/A - MATRIZ' },
+                  { value: 'TOTVS S/A - FIL. BELO HORIZONTE' }
+                ]"
+              >
+              </po-combo>
+              <po-input
+                class="po-lg-4"
+                p-label="Percentual do pedido por filial, Valor ou Quantidade"
+              ></po-input>
+              <po-button
+                class="po-lg-auto po-mt-lg-4"
+                p-label="Adicionar filial"
+                p-kind="primary"
+              ></po-button>
+
+              <po-disclaimer-group
+                class="po-lg-12 po-mt-1"
+                [p-disclaimers]="[{ value: 'disclaimer' }]"
+              ></po-disclaimer-group>
+            </div>
+          </app-collapse>
+
+          <po-button
+            class="po-md-auto po-pull-right po-mt-3"
+            p-label="Continuar"
+            p-kind="primary"
+          ></po-button>
+          <po-button
+            class="po-md-auto po-pull-right po-mt-3"
+            p-label="Voltar"
+          ></po-button>
+        </po-step>
+
+        <!-- STEP 3 -->
+        <po-step p-label="Objeto do contrato">
+          <app-collapse title="Objeto do contrato">
+            <div class="po-lg-12">
+              <po-textarea
+                class="po-lg-12"
+                name="textarea"
+                p-label="Descrição"
+                p-placeholder="Insira a descrição"
+              >
+              </po-textarea>
+
+              <po-select
+                class="po-lg-4"
+                p-label="Compartilha Dados Pessoais:"
+                [p-options]="[]"
+              >
+              </po-select>
+              <po-select
+                class="po-lg-4"
+                p-label="Alocação de Profissionais:"
+                [p-options]="[]"
+              >
+              </po-select>
+              <po-select
+                class="po-lg-4"
+                p-label="Mais de 22h/ mês:"
+                [p-options]="[]"
+              >
+              </po-select>
+
+              <po-input class="po-lg-3" p-label="Vigência"></po-input>
+              <po-select class="po-lg-5 po-mt-lg-3" [p-options]="[]">
+              </po-select>
+              <po-select
+                class="po-lg-4"
+                p-label="Índice de Reajuste:"
+                [p-options]="[]"
+              >
+              </po-select>
+            </div>
+          </app-collapse>
+
+          <po-button
+            class="po-md-auto po-pull-right po-mt-3"
+            p-label="Continuar"
+            p-kind="primary"
+          ></po-button>
+          <po-button
+            class="po-md-auto po-pull-right po-mt-3"
+            p-label="Voltar"
+          ></po-button>
+        </po-step>
+
+        <!-- STEP 4 -->
+        <po-step p-label="Valores a pagar">
+          <app-collapse title="Valores a pagar">
+            <div class="po-lg-12">
+              <po-button
+                class="po-lg-auto"
+                p-label="Adicionar nova linha"
+              ></po-button>
+            </div>
+            <div class="po-lg-12 po-mt-4">
+              <po-input class="po-lg-2" p-label="Valor"></po-input>
+              <po-input class="po-lg-3" p-label="Forma de Pagamento"></po-input>
+              <po-input class="po-lg-2" p-label="Centro de Custo"></po-input>
+              <po-input class="po-lg-1" p-label="Item"></po-input>
+              <po-input class="po-lg-2" p-label="Classe de valor"></po-input>
+              <po-input class="po-lg-2" p-label="Conta contábil"></po-input>
+              <po-input class="po-lg-3" p-label="Descrição da conta"></po-input>
+            </div>
+            <div class="po-lg-12 po-mt-3">
+              <po-checkbox
+                class="po-lg-8"
+                name="checkbox"
+                p-label="Gasto previsto na aquisição dos produtos / serviços, por tabela de preços (R$)"
+              >
+              </po-checkbox>
+              <po-input class="po-lg-4"></po-input>
+            </div>
+          </app-collapse>
+
+          <po-button
+            class="po-md-auto po-pull-right po-mt-3"
+            p-label="Finalizar contrato"
+            p-kind="primary"
+          ></po-button>
+          <po-button
+            class="po-md-auto po-pull-right po-mt-3"
+            p-label="Voltar"
+          ></po-button>
+        </po-step>
+      </po-stepper>
+    </div>
+
+    <div style="color: transparent">.</div>
+    <div style="color: transparent; margin-top: 60px">.</div>
+  </div>
+</po-page-default>

@@ -1,0 +1,68 @@
+<po-page-default>
+  <div class="page-header">
+    <div class="page-header_container po-lg-12">
+      <h1 class="po-lg-12">Central de Contratos</h1>
+      <div class="element"></div>
+
+      <app-indicator-card
+        classSize="po-lg-3"
+        title="Total de Contratos"
+        valueCount="50"
+        value="R$ 32.590,00"
+      ></app-indicator-card>
+      <app-indicator-card
+        classSize="po-lg-3"
+        title="Contratos aprovados"
+        valueCount="25"
+        value="R$ 16.590,00"
+      ></app-indicator-card>
+      <app-indicator-card
+        classSize="po-lg-3"
+        title="Contratos reprovados"
+        valueCount="12"
+        value="R$ 6.590,00"
+      ></app-indicator-card>
+    </div>
+  </div>
+
+  <div class="page-content po-lg-12">
+    <po-widget class="po-lg-12">
+      <div class="page-content_container">
+        <h2 class="po-lg-12">Contratos solicitados</h2>
+
+        <app-search-table
+          classSize="po-lg-4 po-mt-sm-2"
+          style="position: relative; bottom: 7px"
+          [placeholder]="'Pesquisar pelo contrato'"
+          [search]="onSearchContractJuri"
+        ></app-search-table>
+        <po-button
+          class="po-lg-auto po-pull-right"
+          p-label="Exportar"
+          p-action="export"
+          p-kind="secondary"
+          p-icon="an an-download"
+        ></po-button>
+
+        <div class="po-md-12 po-mt-4" style="padding: 0">
+          <po-table
+            p-sort
+            [p-striped]="true"
+            [p-draggable]="true"
+            class="po-md-12"
+            p-hide-columns-manager="true"
+            [p-columns]="contractsJuriColumns"
+            [p-height]="400"
+            [p-hide-table-search]="true"
+            p-hide-table-search="false"
+            [p-items]="contractsJuriItems()"
+            [p-actions]="tableActions"
+          >
+          </po-table>
+        </div>
+      </div>
+    </po-widget>
+    <div style="color: transparent">.</div>
+    <div style="color: transparent; margin-top: 30px">.</div>
+  </div>
+</po-page-default>

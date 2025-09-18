@@ -1,0 +1,69 @@
+.page-header {
+
+  .title-container {
+    margin: 53px 0;
+  }
+  h1 {
+    font-size: 2rem;
+  }
+
+}
+
+.element {
+  background-image: url("../../../../../assets/images/elements.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: -100px;
+  right: 75px;
+  width: 265px;
+  height: 265px;
+  z-index: 9999;
+
+  @media (max-width: 960px) {
+    display: none;
+  }
+}
+
+.page-content {
+  margin-top: 40px;
+  .page-content_container {
+    // padding: 0 14px;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 16px 0;
+    }
+  }
+}
+
+.tabs-container {
+  margin-top: 80px;
+  // margin: 0 auto;
+}
+
+::ng-deep .po-stepper-container-horizontal {
+  // min-width: 1200px;
+  margin: 0 auto;
+}
+
+.step-wrapper {
+  margin-top: 10px;
+  background-color: rebeccapurple;
+}
+
+::ng-deep po-page-dynamic-edit .po-page {
+  margin-left: none;
+  background-color: rosybrown;
+}
+
+::ng-deep po-tabs {
+  max-width: calc(100% - 8px);
+}
+
+::ng-deep .zindex {
+  z-index: 2;
+  position: relative;
+  // background-color: red;
+}

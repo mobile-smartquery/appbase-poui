@@ -1,0 +1,77 @@
+::ng-deep .po-page-content {
+  padding-bottom: 50px;
+}
+
+::ng-deep th.po-table-header-single-action, ::ng-deep td.po-table-column-single-action {
+  box-shadow: -3px 0 2.6px var(--color-neutral-light-30) !important;
+  position: sticky !important;
+  right: 0 !important;
+  z-index: 2 !important;
+}
+
+::ng-deep td.po-table-column-single-action {
+  box-shadow: -3px 0 2.6px var(--color-neutral-light-30) !important;
+  position: sticky !important;
+  right: 0 !important;
+  z-index: 2 !important;
+}
+
+::ng-deep .po-table-header-single-action  {
+  max-width: 70px !important;
+  min-width: 70px !important;
+}
+
+::ng-deep .po-table .po-table-single-action {
+  text-decoration: none !important;
+  color: var(--color-feedback-negative-base) !important;
+}
+::ng-deep .po-table .po-table-single-action:hover {
+  text-decoration: none !important;
+  color: var(--color-feedback-negative-base) !important;
+}
+
+::ng-deep .po-table-footer-show-more > po-button {
+  margin-left: 0;
+  width: 100%;
+}
+
+::ng-deep .po-table[p-spacing=medium] tbody tr td:not(.po-table-column-detail) {
+  padding-block: 0.55rem;
+}
+
+
+// #ffe6e6
+::ng-deep .po-table tbody tr td:has(.deleted-row) {
+  background-color: #ffe6e6 !important;
+}
+
+::ng-deep .po-table tbody tr:has(.deleted-row) td.po-table-column-single-action {
+  background-color: #ffe6e6 !important;
+}
+
+::ng-deep .po-table tbody tr td:has(.edited-row) {
+  background-color: var(--color-brand-01-lightest) !important;
+  border-bottom: 2px solid var(--color-brand-01-lighter) !important;
+  border-top: 2px solid var(--color-brand-01-lighter) !important;
+}
+
+::ng-deep .po-table tbody tr td:has(.edited-row):nth-child(1) {
+  border-left: 2px solid var(--color-brand-01-lighter) !important;
+}
+
+::ng-deep .po-table tbody tr:has(.edited-row) td.po-table-column-single-action {
+  background-color: var(--color-brand-01-lightest) !important;
+  border-bottom: 2px solid var(--color-brand-01-lighter) !important;
+  border-top: 2px solid var(--color-brand-01-lighter) !important;
+  border-right: 2px solid var(--color-brand-01-lighter) !important;
+}
+
+// .cell-container:focus-within {
+//   outline: 2px solid var(--color-brand-01-base); // Ajuste a cor e o estilo conforme necessário
+//   outline-offset: 2px; // Opcional, para espaçamento entre o outline e o elemento
+// }
+
+::ng-deep .po-popover {
+  width: 400px;
+  min-height: 130px
+}

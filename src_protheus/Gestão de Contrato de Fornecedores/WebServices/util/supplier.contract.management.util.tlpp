@@ -1,0 +1,56 @@
+#include "tlpp-core.th"
+#include "tlpp-rest.th"
+#Include "TOTVS.CH"
+#Include "Protheus.ch"
+#INCLUDE "TRYEXCEPTION.CH"
+#INCLUDE "PARMTYPE.CH"
+#INCLUDE "TOPCONN.CH"
+namespace tdi.sigacom.supplier.contract.util
+
+/*/{Protheus.doc} TdiCOMSupplierContractUtil
+    Classe responsavel pelas regras de negocio das requisicoes POST/PUT/PATCH/GET 
+	do cancelamento contratos
+    @type Class
+    @author Cassio Menabue Lima
+    @since 02/05/2024
+    @version 1.0
+/*/
+Class TdiComSupplierContractUtil from LongNameClass
+	Public Data Id as Character
+	Public Data cError as Character
+    Public Data oDataBase  
+    Public Method New(cVerbo)
+   
+	Public Method GetFieldsTable(ctable)
+
+EndClass    
+/*/{Protheus.doc} New()
+    Metodo responsavel por instanciar a classe e iniciar variaveis
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 04/06/2025
+    @version 1.0
+/*/
+Method New(cVerbo) class TdiComSupplierContractUtil
+    Default cVerbo := "GET"
+	::oDataBase := FWAdapterBaseV2():new(cVerbo, .T.)
+
+Return Self
+
+/*/{Protheus.doc} GetFieldsTable()
+    Metodo responsavel por montar os campos do Select
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 04/06/2025
+    @version 1.0
+/*/
+Method GetFieldsTable(cTable) class TdiComSupplierContractUtil 
+	Local nx
+	Local cFields := ''
+
+	For nx := 1 To  (cTable)->(FCount())
+		cFields += (cTable)->(FieldName(nx)) + ','
+	Next nx
+
+	cFields := Left(cFields,Len(cFields)-1)
+Return cFields

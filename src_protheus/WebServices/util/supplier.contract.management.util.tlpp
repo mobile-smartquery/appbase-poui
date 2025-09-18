@@ -1,0 +1,511 @@
+#include "tlpp-core.th"
+#include "tlpp-rest.th"
+#Include "TOTVS.CH"
+#Include "Protheus.ch"
+#INCLUDE "TRYEXCEPTION.CH"
+#INCLUDE "PARMTYPE.CH"
+#INCLUDE "TOPCONN.CH"
+namespace tdi.sigacom.supplier.contract.util
+Static _SYS_CPOS := GetMv('TI_GCFUSR',,'USR_ID,USR_CODIGO,USR_NOME,USR_EMAIL,USR_MSBLQL')
+
+/*/{Protheus.doc} TdiCOMSupplierContractUtil
+    Classe responsavel pelas regras de negocio das requisicoes POST/PUT/PATCH/GET 
+	do cancelamento contratos
+    @type Class
+    @author Cassio Menabue Lima
+    @since 02/05/2024
+    @version 1.0
+/*/
+Class TdiComSupplierContractUtil from LongNameClass
+
+	Data oDataBase
+	Public Data cFields   as Character
+	Public Data cFilter   as Character
+	Public Data nPage
+	Public Data nPageSize
+	Public Data cOrder    as Character
+	Data oException as Object
+	Data oResponse as Object
+	Data cErroBlk as Character
+	Data lError as Logical
+	Data oError
+	Public Method New(cVerbo)
+	Public Method GetData(oRest,cTable)
+	Public Method GetDataGroup(oRest,cTable)
+	Public Method GetResponse()
+	Public Method GetFieldsTable(ctable)
+	Public Method isError()
+	Public Method setError(cError)
+	Public Method getError()
+	Public Method Destroy()
+	Public Method GetCompanyBranches(oRest,cTipo)
+	Public Method GetX3Combo(oRest)
+
+
+EndClass
+/*/{Protheus.doc} New()
+    Metodo responsavel por instanciar a classe e iniciar variaveis
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 04/06/2025
+    @version 1.0
+/*/
+Method New(cVerbo) class TdiComSupplierContractUtil
+
+	Default cVerbo  := "GET"
+	::oDataBase     := FWAdapterBaseV2():new(cVerbo, .T.)
+	Self:cFields    := ""
+	Self:cFilter    := ""
+	Self:nPage      := 1
+	Self:nPageSize  := 50
+	Self:cOrder     := ""
+	Self:cErroBlk  := ""
+	Self:lError     := .F.
+	Self:oResponse  := JsonObject():New()
+	Self:oError     := JsonObject():New()
+
+Return Self
+/*/{Protheus.doc} Destroy()
+    Metodo responsavel por destruir a classe e limpar as variaveis
+    @type Method
+    @author Cassio Menabue Lima
+    @since 19/06/2025
+    @version 1.0
+/*/
+
+Method Destroy() class TdiComSupplierContractUtil
+	::oDataBase := Nil
+	::cFields   := ""
+	::cFilter   := ""
+	::nPage     := ""
+	::nPageSize := ""
+	::cOrder    := ""
+	::oException:= Nil
+	::oResponse := Nil
+	::oError    := Nil
+	::cErroBlk  := ""
+	::lError    := .F.
+Return Self
+
+/*/{Protheus.doc} GetData()
+    Metodo responsavel por montar os campos do Select e retornar os dados
+    de acordo com o verbo utilizado na requisicao
+    @type Method
+    @author Cassio Menabue Lima
+    @since 19/06/2025
+    @version 1.0
+/*/
+
+Method GetData(oRest,cTable) class TdiComSupplierContractUtil
+	Local nx
+	Local aFields		:={}
+	Local cQuery     	:= ""
+	Local cWhere		:= ""
+	Local lRet         	:= .T.
+	Local jQueryParams  := oRest:getQueryRequest()
+	Local cAliWhere     := If(SubStr(cTable, 1, 1) == 'S'.And. Len(cTable)<=3, SubStr(cTable,2, 2), cTable)
+	Local cErroBlock:=""
+
+	Self:oException := ErrorBlock({|e| cErroBlock := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+
+	Begin Sequence
+		if jQueryParams:HasProperty("page")
+			Self:nPage := If(Empty(jQueryParams['page']), 1, cValToChar(jQueryParams['page']))
+		endif
+		if jQueryParams:HasProperty("pageSize")
+			Self:nPageSize := If(Empty(jQueryParams['pageSize']), 50, cValToChar(jQueryParams['pageSize']))
+		endif
+
+		if jQueryParams:HasProperty("order")
+			Self:cOrder := If(Empty(jQueryParams['order']), '', jQueryParams['order'])
+		else
+			Self:cOrder :=""
+		endif
+		if jQueryParams:HasProperty("fields")
+			Self:cFields := If(Empty(jQueryParams['fields']), Self:GetFieldsTable(cTable), jQueryParams['fields'])
+		Else
+			Self:cFields :=Self:GetFieldsTable(cTable)
+		endif
+		if jQueryParams:HasProperty("filter")
+			Self:cFilter := If(Empty(jQueryParams['filter']), '', jQueryParams['filter'])
+		Else
+			Self:cFilter :=''
+		endif
+		aFields := StrToKArr2(Self:cFields, ',')
+		If cTable == "SYS_USR" // Tratativa somente para tabelas de usuarios
+			for nx := 1 to Len(aFields)
+				if aFields[nx] == "USR_ID"
+					nTam := 6
+				ElseIf aFields[nx] == "USR_CODIGO"
+					nTam := 25
+				ElseIf aFields[nx] == "USR_NOME"
+					nTam := 40
+				ElseIf aFields[nx] == "USR_EMAIL"
+					nTam := 150
+				Else
+					nTam := 50
+				EndIf
+				Self:oDataBase:AddMapFields( aFields[nx]   , aFields[nx]  , .T., .F., { aFields[nx],"C",nTam, 0 } )
+			next
+			// Dados da Query
+			cQuery := " SELECT #QueryFields# "
+			cQuery += " FROM SYS_USR "
+			cQuery += " WHERE #QueryWhere#"
+			cWhere := " D_E_L_E_T_ = ' '"
+
+		Else
+
+			for nx := 1 to Len(aFields)
+				Self:oDataBase:AddMapFields( aFields[nx]   , aFields[nx]  , .T., .F., { aFields[nx]  , TamSX3( aFields[nx] )[3], TamSX3( aFields[nx] )[1], 0 } )
+			next
+
+			// Dados da Query
+			cQuery := " SELECT #QueryFields# "
+			cQuery += " FROM " + RetSqlName(cTable) + "  "+cAliWhere
+			cQuery += " WHERE #QueryWhere#"
+			cWhere := " @_FILIAL = '"+ FWxFilial(cTable) +"' AND @.D_E_L_E_T_ = ' '"
+			//Troca o @ por 2 characteres  se a tabela começar com S ou 3 characteres
+			cWhere:= StrTran(cWhere, '@', cAliWhere )
+		EndIF
+
+		Self:oDataBase:setPage(Self:nPage)
+		Self:oDataBase:setPageSize(Self:nPageSize)
+		Self:oDataBase:SetOrderQuery(Self:cOrder)
+		Self:oDataBase:SetUrlFilter({{'FILTER', Self:cFilter}})
+		Self:oDataBase:SetFields( Self:cFields )
+		Self:oDataBase:SetQuery( cQuery )
+		Self:oDataBase:SetWhere( cWhere )
+		Self:oDataBase:SetOrderQuery( Self:cOrder )
+
+		//Executa a consulta, se retornar .T. tudo ocorreu conforme esperado
+		If Self:oDataBase:Execute()
+			// Gera o arquivo Json com o retorno da Query
+			Self:oDataBase:FillGetResponse()
+		EndIf
+
+		If Self:oDataBase:lOk
+			Self:oResponse:=Self:oDataBase:getJSONResponse()
+			Return
+		Else
+			lRet := .F.
+			Self:cErroBlk := 'Não foi possivel filter os registros!'
+			Self:setError(Self:cErroBlk)
+			Return
+		EndIf
+
+	End Sequence
+
+	ErrorBlock(Self:oException)
+
+	If !lRet
+		Self:setError(cErroBlock)
+		Return
+	EndIf
+
+	Self:setError(cErroBlock)
+Return
+
+/*/{Protheus.doc} GetDataGroup()
+    Metodo responsavel por montar os campos do Select com group by e retornar os dados
+    de acordo com o verbo utilizado na requisicao
+    @type Method
+    @author Cassio Menabue Lima
+    @since 20/06/2025
+    @version 1.0
+/*/
+
+Method GetDataGroup(oRest,cTable) class TdiComSupplierContractUtil
+	Local nx
+	Local aFields		:={}
+	Local cQuery     	:= ""
+	Local cWhere		:= ""
+	Local lRet         	:= .T.
+	Local jQueryParams  := oRest:getQueryRequest()
+	Local cAliWhere     := If(SubStr(cTable, 1, 1) == 'S'.And. Len(cTable)<=3, SubStr(cTable,2, 2), cTable)
+	Local cErroBlock:=""
+
+	Self:oException := ErrorBlock({|e| cErroBlock := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+
+	Begin Sequence
+		if jQueryParams:HasProperty("page")
+			Self:nPage := If(Empty(jQueryParams['page']), 1, cValToChar(jQueryParams['page']))
+		endif
+		if jQueryParams:HasProperty("pageSize")
+			Self:nPageSize := If(Empty(jQueryParams['pageSize']), 50, cValToChar(jQueryParams['pageSize']))
+		endif
+
+		if jQueryParams:HasProperty("order")
+			Self:cOrder := If(Empty(jQueryParams['order']), '', jQueryParams['order'])
+		else
+			Self:cOrder :=""
+		endif
+		/*if jQueryParams:HasProperty("fields")
+			Self:cFields := If(Empty(jQueryParams['fields']), Self:GetFieldsTable(cTable), jQueryParams['fields'])
+		Else
+			Self:cFields :=Self:GetFieldsTable(cTable)
+		endif*/
+		if jQueryParams:HasProperty("filter")
+			Self:cFilter := If(Empty(jQueryParams['filter']), '', jQueryParams['filter'])
+		Else
+			Self:cFilter :=''
+		endif
+		/*
+		aFields := StrToKArr2(Self:cFields, ',')
+		If cTable == "SYS_USR" // Tratativa somente para tabelas de usuarios
+			for nx := 1 to Len(aFields)
+				if aFields[nx] == "USR_ID"
+					nTam := 6
+				ElseIf aFields[nx] == "USR_CODIGO"
+					nTam := 25
+				ElseIf aFields[nx] == "USR_NOME"
+					nTam := 40
+				ElseIf aFields[nx] == "USR_EMAIL"
+					nTam := 150
+				Else
+					nTam := 50
+				EndIf
+				Self:oDataBase:AddMapFields( aFields[nx]   , aFields[nx]  , .T., .F., { aFields[nx],"C",nTam, 0 } )
+			next
+			// Dados da Query
+			cQuery := " SELECT #QueryFields# "
+			cQuery += " FROM SYS_USR "
+			cQuery += " WHERE #QueryWhere#"
+			cWhere := " D_E_L_E_T_ = ' '"
+
+		Else
+
+			for nx := 1 to Len(aFields)
+				Self:oDataBase:AddMapFields( aFields[nx]   , aFields[nx]  , .T., .F., { aFields[nx]  , TamSX3( aFields[nx] )[3], TamSX3( aFields[nx] )[1], 0 } )
+			next
+
+			// Dados da Query
+			cQuery := " SELECT #QueryFields# "
+			cQuery += " FROM " + RetSqlName(cTable) + "  "+cAliWhere
+			cQuery += " WHERE #QueryWhere#"
+			cWhere := " @_FILIAL = '"+ FWxFilial(cTable) +"' AND @.D_E_L_E_T_ = ' '"
+			//Troca o @ por 2 characteres  se a tabela começar com S ou 3 characteres
+			cWhere:= StrTran(cWhere, '@', cAliWhere )
+		EndIF
+
+		Self:oDataBase:setPage(Self:nPage)
+		Self:oDataBase:setPageSize(Self:nPageSize)
+		Self:oDataBase:SetOrderQuery(Self:cOrder)
+		Self:oDataBase:SetUrlFilter({{'FILTER', Self:cFilter}})
+		Self:oDataBase:SetFields( Self:cFields )
+		Self:oDataBase:SetQuery( cQuery )
+		Self:oDataBase:SetWhere( cWhere )
+		Self:oDataBase:SetOrderQuery( Self:cOrder )
+
+		//Executa a consulta, se retornar .T. tudo ocorreu conforme esperado
+		If Self:oDataBase:Execute()
+			// Gera o arquivo Json com o retorno da Query
+			Self:oDataBase:FillGetResponse()
+		EndIf
+
+		If Self:oDataBase:lOk
+			Self:oResponse:=Self:oDataBase:getJSONResponse()
+			Return
+		Else
+			lRet := .F.
+			Self:cErroBlk := 'Não foi possivel filter os registros!'
+			Self:setError(Self:cErroBlk)
+			Return
+		EndIf
+*/
+		aDados:={}
+		oResponse    	:= JsonObject():New()
+		oResponse['widget'] := 'Total de Contratos'
+		oResponse['count'] := 50
+		oResponse['sum'] := 32590.00
+		oResponse['avg'] := 0
+		oResponse['max'] := 0
+		oResponse['min'] := 0
+		Aadd(aDados, oResponse)
+		oResponse    	:= JsonObject():New()
+		oResponse['widget'] := 'Contratos concluidos'
+		oResponse['count'] := 25
+		oResponse['sum'] := 16590.00
+		oResponse['avg'] := 0
+		oResponse['max'] := 0
+		oResponse['min'] := 0
+		Aadd(aDados, oResponse)
+		oResponse    	:= JsonObject():New()
+		oResponse['widget'] := 'Contratos em Andamento'
+		oResponse['count'] := 12
+		oResponse['sum'] := 6590.00
+		oResponse['avg'] := 0
+		oResponse['max'] := 0
+		oResponse['min'] := 0
+		Aadd(aDados, oResponse)
+		oResponse    	:= JsonObject():New()
+		oResponse['widget'] := 'Contratos Proximos a Vencer'
+		oResponse['count'] := 15
+		oResponse['sum'] := 4590.00
+		oResponse['avg'] := 0
+		oResponse['max'] := 0
+		oResponse['min'] := 0
+		Aadd(aDados, oResponse)
+		oRet    	:= JsonObject():New()
+		oRet['items'] := aDados
+		oRet['remainingRecords'] := 0
+		oRet['hasNext'] := .F.
+		Self:oResponse:=oRet:toJson()
+		Return
+	End Sequence
+
+	ErrorBlock(Self:oException)
+
+	If !lRet
+		Self:setError(cErroBlock)
+		Return
+	EndIf
+
+	Self:setError(cErroBlock)
+Return
+/*/ Metodo responsavel por retornar o objeto de resposta da requisicao
+	Se houver algum erro, retorna um JsonObject com os detalhes do erro
+	@type Method
+	@author Cassio Menabue Lima
+	@since 04/06/2025
+	@version 1.0
+/*/
+Method GetResponse() class TdiComSupplierContractUtil
+Return Self:oResponse
+/*/ Metodo responsavel por setar o erro na classe
+	@type Method
+	@author Cassio Menabue Lima
+	@since 04/06/2025
+	@version 1.0
+/*/
+Method setError(cError) class TdiComSupplierContractUtil
+	::cErroBlk := cError
+	::lError := .T.
+	Self:oError['code'] := -1
+	Self:oError['message'] := 'Aconteceu um erro inesperado no serviço!'
+	Self:oError['detailedMessage'] := Self:cErroBlk
+Return
+
+/*/ Metodo responsavel por verificar se ocorreu algum erro na requisicao
+	@type Method
+	@author Cassio Menabue Lima
+	@since 04/06/2025
+	@version 1.0
+/*/
+Method isError() class TdiComSupplierContractUtil
+Return ::lError
+/*/ Metodo responsavel por retornar o erro da requisicao
+	Se houver algum erro, retorna um JsonObject com os detalhes do erro
+	@type Method
+	@author Cassio Menabue Lima
+	@since 04/06/2025
+	@version 1.0
+/*/
+Method getError() class TdiComSupplierContractUtil
+Return Self:oError
+/*/{Protheus.doc} GetFieldsTable()
+    Metodo responsavel por montar os campos do Select
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 04/06/2025
+    @version 1.0
+/*/
+Method GetFieldsTable(cTable) class TdiComSupplierContractUtil
+	Local nx
+	Local cFields := ''
+
+	If cTable == "SYS_USR" // Tratativa somente para tabelas de usuarios
+		Return  _SYS_CPOS
+	EndIF
+	For nx := 1 To  (cTable)->(FCount())
+		cFields += (cTable)->(FieldName(nx)) + ','
+	Next nx
+
+	cFields := Left(cFields,Len(cFields)-1)
+Return cFields
+/*/{Protheus.doc} GetCompanyBranches()
+    Metodo responsavel por listar as filiais da empresa
+    @type Method
+    @author Cassio Menabue Lima
+    @since 19/06/2025
+    @version 1.0
+	@links: https://tdn.totvs.com/pages/releaseview.action?pageId=427052751
+/*/
+
+method GetCompanyBranches(oRest,cTipo) class TdiComSupplierContractUtil
+	local aBranches      := {}
+	local nI := 0
+	local cCode  := ""
+	local cName  := ""
+	Local oDados  := JsonObject():New()
+	Local oRet:= JsonObject():New()
+	Local aDados := {}
+	Local jQueryParams       	:= oRest:getQueryRequest()
+
+	if jQueryParams:HasProperty("filter")
+		cFilter      	:= If(Empty(jQueryParams['filter']), '', jQueryParams['filter'])
+	Else
+		cFilter := ''
+	endif
+
+	aBranches := FWLoadSM0()
+	for nI := 1 to len(aBranches)
+		IF cTipo == "companies"
+			cCode := aBranches[nI][1]  //Código da empresa
+			cName := aBranches[nI][19]  //Nome da empresa
+		Else
+			cCode := aBranches[nI][2]  //Código da Filial
+			cName := aBranches[nI][6]  //Nome da Filial
+		EndIF
+		If !Empty(cFilter)
+			if(!Alltrim(cCode) $ cFilter)
+				Loop
+			EndIF
+		EndIF
+		cGcg := aBranches[nI][7]  //CGC da empresa
+		nPos:= aScan(aDados,{|x| x['code'] == cCode})
+		//Nao deixa repetir o mesmo registro
+		If(nPos==0)
+			oDados  := JsonObject():New()
+			oDados['code'] := Alltrim(cCode)
+			oDados['name'] := Alltrim(cName)
+			oDados['cgc'] := Alltrim(cGcg)
+			Aadd(aDados, oDados)
+		EndIF
+	next nI
+	oRet['items'] := aDados
+	oRet['remainingRecords'] := 0
+	oRet['hasNext'] := .F.
+Return oRet
+
+
+/*/{Protheus.doc} getx3Combo
+	Retorn o combobox de um determinado campo
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+
+	/*/
+Method GetX3Combo(oRest) class TdiComSupplierContractUtil
+	local nI := 0
+	Local oDados  := JsonObject():New()
+	Local oRet:= JsonObject():New()
+	Local aDados := {}
+	Local jQueryParams       	:= oRest:getQueryRequest()
+	Local aComboBox :={}
+	if jQueryParams:HasProperty("fields") .And. !Empty(jQueryParams['fields'])
+		cField   := jQueryParams['fields']
+		aComboBox := RetSx3Box( Posicione('SX3', 2, Upper(cField), 'X3CBox()' ),,, 150 )
+		for nI := 1 to len(aComboBox)
+			oDados  := JsonObject():New()
+			oDados['combo']:= Alltrim(aComboBox[nI][1])
+			oDados['label'] := Alltrim(aComboBox[nI][2])
+			oDados['option'] := Alltrim(aComboBox[nI][3])
+
+			Aadd(aDados, oDados)
+		Next nI
+	endif
+	oRet['items'] := aDados
+	oRet['remainingRecords'] := 0
+	oRet['hasNext'] := .F.
+Return oRet

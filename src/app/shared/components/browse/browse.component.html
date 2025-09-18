@@ -1,0 +1,89 @@
+<!-- <po-page-dynamic-search
+  [p-title]="description"
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="actions"
+  (p-quick-search)="onSearch($event)"
+  [p-quick-search-width]="5"
+  [p-filters]="filters"
+  [p-load]="onLoadFields.bind(this)"
+  (p-advanced-search)="onAdvancedSearch($event)"
+  (p-change-disclaimers)="onSearch('')"
+> -->
+<po-table
+  #table
+  [p-hide-batch-actions]="false"
+  [p-sort]="true"
+  [p-striped]="true"
+  [ngClass]="{
+    'hide-column-manager': hideColumnsManager,
+    'hide-show-more': showAdvancedPagination,
+  }"
+  p-actions-right="true"
+  [p-height]="height()"
+  [p-show-more-disabled]="!hasNext()"
+  (p-show-more)="hasNext()"
+  [p-columns]="columns"
+  [p-loading]="loading()"
+  [p-actions]="actionsTable"
+  [p-items]="items()"
+>
+  <!-- [p-hide-columns-manager]="hideColumnsManager" -->
+</po-table>
+<div *ngIf="showAdvancedPagination" class="pagination-container">
+  <div class="pagination-container_item border-right">
+    <span class="pagination-label">{{ showTotalPageIndicator }}</span>
+  </div>
+
+  <div class="pagination-container_item pagination-label pagination-options">
+    <po-button
+      p-icon="an an-caret-left"
+      [p-disabled]="page === 1"
+      (p-click)="previousPage()"
+      p-kind="tertiary"
+      class="po-mr-3"
+    ></po-button>
+
+    <div class="pagination-container_item">
+      <span>Página</span>
+      <po-number
+        [p-min]="1"
+        [(ngModel)]="page"
+        (p-change)="changePage()"
+        class="po-mr-1 po-ml-1"
+        style="width: 50px"
+      ></po-number>
+      <span class="po-mr-1">de</span>
+      <span>{{ this.totalPages || "?" }}</span>
+    </div>
+
+    <po-button
+      p-icon="an an-caret-right"
+      [p-disabled]="!hasNext()"
+      (p-click)="nextPage()"
+      p-kind="tertiary"
+      class="po-ml-3"
+    ></po-button>
+  </div>
+  <div class="pagination-container_item">
+    <div class="border-left result-pages" style="width: 100%">
+      <div class="">
+        <span class="pagination-label po-mr-2">Resultados por página</span>
+      </div>
+      <po-select
+        p-label=""
+        [ngModel]="pageSize"
+        (ngModelChange)="pageSize = $event; changePageSize()"
+        class="paggination-select_pagesize po-md-3"
+        style="width: 110px"
+        [p-options]="[
+          { label: '10', value: 10 },
+          { label: '20', value: 20 },
+          { label: '50', value: 50 },
+          { label: '100', value: 100 },
+          { label: '1000', value: 1000 }
+        ]"
+      ></po-select>
+    </div>
+  </div>
+</div>
+<!-- </po-page-dynamic-search> -->

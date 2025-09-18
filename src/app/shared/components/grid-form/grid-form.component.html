@@ -1,0 +1,113 @@
+<div #gridContainer>
+
+<po-widget>
+  <h3 class="po-md-auto">{{label}}</h3>
+
+  <po-button
+    class="po-md-auto po-pull-right"
+    p-icon="an an-plus-square"
+    p-label="Adicionar"
+    (p-click)="addNewItem()"
+    [p-disabled]="!!editedCell.columnProperty || !EditRowModal.isHidden || mode === 'view'"
+    p-kind="tertiary"
+  ></po-button>
+
+  <po-button
+    #EditionMode
+    class="po-md-auto po-pull-right"
+    p-icon="an an-pencil-line"
+    p-label="Modo de edição"
+    [p-disabled]="!!editedCell.columnProperty || !EditRowModal.isHidden || mode === 'view'"
+    p-kind="tertiary"
+  ></po-button>
+
+  <po-popover p-position="bottom" [p-target]="editionMode" (p-close)="onEditCellMode(radioGroup.value)">
+    <!-- (p-change)="onEditCellMode($event)" -->
+    <po-radio-group
+      #radioGroup
+      [p-disabled]="!!editedCell.columnProperty"
+      [(ngModel)]="editCellFormMode"
+      name="editModeOptions"
+      p-label="Modo de Edição"
+      [p-options]="[
+        { label: 'Edição por Linha', value: 'row' },
+        { label: 'Edição por Célula', value: 'cell', disabled: true }
+      ]"
+    >
+    </po-radio-group>
+  </po-popover>
+
+  <po-table
+    class="po-md-12 po-mt-1 po-mb-1"
+    p-sort="true"
+    p-actions-right="true"
+    [p-auto-collapse]="true"
+    [p-actions]="actions"
+    p-hide-columns-manager="true"
+    [p-loading]="loading()"
+    [p-columns]="columns"
+    [p-items]="_items()"
+    >
+    <!-- [p-height]="400" -->
+    <ng-template p-table-cell-template let-column="column" let-row="row">
+      <div
+        class="cell-container"
+        (click)="onCellClick(row, column.property)"
+        [ngClass]="{ 'deleted-row': row._delete, 'edited-row': row._edit }"
+      >
+        <div style="min-height: 1.2rem; width: 100%; cursor: pointer;" *ngIf="!row._edit">
+          {{ row[column.property] }}
+        </div>
+
+        <!-- *ngIf="row._edit && editedCell.columnProperty === column.property" -->
+        <!-- <po-input
+        *ngIf="row._edit"
+        class="po-md-12"
+        (keydown)="onInputKeydown($event, row, column.property)"
+        [(ngModel)]="row[column.property]"
+        [p-auto-focus]="editedCell.columnProperty === column.property"
+        p-additional-help-tooltip="true"
+        ></po-input> -->
+        <!-- *ngIf="row._edit" -->
+        <app-input-field
+        *ngIf="row._edit"
+        [field]="getFieldByProperty(column.property)"
+        (keydown)="onInputKeydown($event, row, column.property)"
+          [disabled]="mode === 'view'"
+          [control]="cellFormGroup.get(column.property)"
+          [onChangeField]="onChangeField"
+          >
+        </app-input-field>
+      </div>
+    </ng-template>
+  </po-table>
+</po-widget>
+
+<po-modal
+  [p-hide-close]="true"
+  p-size="xl"
+  #EditRowModal
+  [p-title]="mode === 'view' ? 'Visualizar Item' : (editCellModel == 'new' ? 'Novo Item' : 'Editar Item')"
+  p-close="false"
+>
+   <app-dynamic-form #formAlias [mode]="mode" [alias]="alias" [isDynamicStruct]="false"></app-dynamic-form>
+  <po-modal-footer>
+    <po-button
+    #close
+    p-label="Fechar"
+    p-icon="an an-close"
+    p-kind="secondary"
+    (p-click)="onCloseModal()"
+    ></po-button>
+
+    <!-- p-icon="an an-check" -->
+    <po-button
+      #confirm
+      p-label="Confirmar"
+      p-kind="primary"
+      (p-click)="onConfirmModal()"
+      [p-disabled]="mode === 'view'"
+    ></po-button>
+  </po-modal-footer>
+  </po-modal>
+</div>

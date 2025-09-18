@@ -1,0 +1,49 @@
+<div class="po-wrapper">
+  <!-- p-actions-icon="an an-warning-circle" -->
+  <po-toolbar
+    p-title="Portal de Contratos de Terceiros"
+    [p-actions-icon]="PalleteTemplate"
+    [p-actions]="actions"
+    p-shadow="true"
+  >
+  </po-toolbar>
+
+  <ng-template #PalleteTemplate>
+    <div class="toolbar-container">
+      <span class="toolbar-profile-name">Joaquim Martins</span>
+      <po-avatar
+        class="profile-picture"
+        p-src="https://wallpaperaccess.com/full/2330391.jpg"
+      >
+      </po-avatar>
+      <po-button
+        p-label="Sair"
+        p-kind="tertiary"
+        [p-danger]="true"
+        class="po-sm-auto"
+        p-icon="an an-sign-out"
+      ></po-button>
+    </div>
+  </ng-template>
+
+  <po-menu
+    [p-collapsed]="true"
+    [p-filter]="true"
+    p-short-logo="assets/images/short-logo-totvs-black.png"
+    p-logo="assets/images/logo-totvs-black.png"
+    [p-menus]="menus"
+  >
+    <div *p-menu-header-template >
+      <po-select
+        [ngModel]="firstBranch"
+        [p-options]="branchesOptions"
+        (p-change)="onChangeBranch($event)"
+        p-icon="po-icon po-icon-company"
+        [p-disabled]="isMainScreen()"
+      >
+      </po-select>
+    </div>
+  </po-menu>
+
+  <router-outlet />
+</div>

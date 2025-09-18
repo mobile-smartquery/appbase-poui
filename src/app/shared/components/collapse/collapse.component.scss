@@ -1,0 +1,26 @@
+/* stylelint-disable selector-type-no-unknown, selector-pseudo-class-no-unknown */
+
+::ng-deep .po-accordion-item-header-button {
+  flex-direction: row-reverse;
+}
+
+::ng-deep .po-accordion-item-header-button {
+  background-color: var(--color-neutral-light-05);
+  // background-color: #045b8f;
+  // background-color: red;
+  border: 0;
+}
+
+::ng-deep .po-accordion-item:is(:first-child) {
+  border-top: 0;
+  border: solid 1px #ccc;
+  border-radius: 3px;
+}
+
+::ng-deep .po-accordion-item-header-icon {
+  margin-right: 12px;
+}
+
+::ng-deep .po-accordion-item-body {
+  padding: 24px 0;
+}

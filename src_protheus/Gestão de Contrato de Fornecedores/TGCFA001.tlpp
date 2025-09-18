@@ -1,0 +1,380 @@
+#INCLUDE 'TOTVS.CH'
+#INCLUDE "FWMVCDEF.CH"
+#INCLUDE "TRYEXCEPTION.CH"
+#include "tlpp-core.th"
+
+namespace contrato.fornecedores
+
+PUBLISH USER MODEL REST NAME contratoFornecedoresTGCFA001 SOURCE TGCFA001
+
+//Variáveis Estáticas
+Static cTitulo    := "Contrato de Fornecedores"
+Static lAuto   	  := Nil
+Static lActive    := .F.
+
+/*/
+{Protheus.doc} TGCFA001
+Tela de Contrato de Fornecedores
+@type function
+@author Matheus Gratão D'Ávila
+@since 24/04/2025
+/*/
+
+User function TGCFA001(aRotAuto,nOpcAuto)
+
+	Local oBrowse := Nil
+	Local aCabec  := Nil
+    Local nY      := 0
+    Local cError  := ""
+
+	lAuto :=.F.
+	If aRotAuto == Nil
+        oBrowse := FWLoadBrw("contrato.fornecedores.TGCFA001")
+
+        oBrowse:Activate()
+        oBrowse:DeActivate()
+        oBrowse:Destroy()
+        FreeObj(oBrowse)
+        oBrowse := nil
+    Else
+		lAuto :=.T.
+		oModel :=  FWLoadModel( 'contrato.fornecedores.TGCFA001' )
+		oModel:SetOperation(nOpcAuto)
+		If Len(aRotAuto) == 0
+			Help(" ",1, 'Help','TGCFA001_AUTO', "Nenhum Dado foi enviado no parametro da execauto", 3, 0 )
+			Return Nil
+		EndIf
+		If !oModel:Activate()
+			Help(" ",1, 'Help','TGCFA001_AUTO',"Nao Foi possivel Ativar o Modelo", 3, 0 )
+			Return Nil
+		EndIf
+		//Somente Inclusao e Alteracao passa por esse bloco
+		if nOpcAuto <> 5
+			aCabec := aRotAuto[1]
+			//Cabeçalho
+			For nY:= 1 to len(aCabec)
+				lRet := .F.
+				TRYEXCEPTION
+					lRet:=oModel:SetValue('PX2MASTER',aCabec[nY][1],aCabec[nY][2])
+				CATCHEXCEPTION USING oError
+					cError := "Erro na atribuição do campo [" + aCabec[nY][1] + "]"
+				ENDEXCEPTION
+				if(!lRet)
+					Exit
+				EndIF
+			Next nY
+
+			// PB9 - Combinações Contábeis
+            If lRet
+                lRet := UpdDetail(oModel, 'PB9DETAIL', aRotAuto[2], "Combinação")
+            EndIf
+			
+			// PX7 - Fornecedores
+			If lRet
+                UpdDetail(oModel, 'PX7DETAIL', aRotAuto[3], "Fornecedor")
+            EndIf
+
+			// PX3 - Itens
+			If lRet
+                UpdDetail(oModel, 'PX3DETAIL', aRotAuto[4], "Item")
+            EndIf
+
+			// PX4 - Empresas
+			If lRet
+                UpdDetail(oModel, 'PX4DETAIL', aRotAuto[5], "Empresa")
+            EndIf
+
+			// PX6 - Usuários
+			If lRet
+                UpdDetail(oModel, 'PX6DETAIL', aRotAuto[6], "Usuário")
+            EndIf
+		EndIF
+
+		If lRet
+			lRet := oModel:VldData()
+			If lRet
+				lRet := oModel:CommitData()
+			EndIf
+		EndIf
+		If !lRet
+			If Empty(cError)
+				cError := Alltrim(oModel:GetErrorMessage()[6]) 
+			Else
+				cError := Alltrim(oModel:GetErrorMessage()[6]) + "-" + cError
+			EndIF
+			Help(" ",1, 'Help','TGCFA001_AUTO', cError, 3, 0 )
+		EndIf
+    EndIf
+
+Return Nil
+
+Static Function UpdDetail(oModel, cDetail, aData, cTabela)
+
+Local nY      := 0
+Local nK      := 0
+Local oModDet := oModel:GetModel(cDetail)
+Local lRet    := .T.
+
+    For nY:= 1 to len(aData)
+        if nY > oModDet:Length()
+            oModDet:AddLine()
+        Else
+            oModDet:GoLine(nY)
+            If oModDet:IsDeleted()
+                oModDet:UnDelete()
+            EndIf
+        EndIF
+        For nK:=1 to Len(aData[nY])
+            lRet := .F.
+            TRYEXCEPTION
+                lRet:=oModel:LoadValue(cDetail,aData[nY][nK][1],aData[nY][nK][2])
+            CATCHEXCEPTION USING oError
+                cError := "Erro na atribuição do campo [" + aData[nY][nK][1] + "]"
+            ENDEXCEPTION
+
+            if(!lRet)
+                Help(" ",1, 'Help','TGCFA001_AUTO', cTabela + ": " + AllTrim(Str(nY)) + "-" + Alltrim(oModel:GetErrorMessage()[6]), 3, 0 )
+                Exit
+            EndIF
+        Next nK
+
+        If ! lRet
+            Exit
+        EndIF
+    Next nY
+    oModDet:GoLine(1)
+
+Return lRet
+
+User function BrowseDef() as Object
+
+    Local oBrowse as Object
+
+    oBrowse := FWMBrowse():New()
+    oBrowse:SetAlias("PX2")
+    oBrowse:SetDescription(cTitulo)
+    oBrowse:DisableDetails()
+
+return oBrowse
+
+/*/{Protheus.doc} MenuDef
+Definição do menu
+@type function
+@author Matheus Gratão D'Ávila
+@since 24/04/2025
+/*/
+
+User function MenuDef() as Array
+
+	Local aRot := {} as Array
+
+	ADD OPTION aRot TITLE 'Pesquisa'   	ACTION 'PesqBrw'    OPERATION 1 ACCESS 0
+	ADD OPTION aRot TITLE 'Visualizar' 	ACTION 'VIEWDEF.contrato.fornecedores.TGCFA001' OPERATION 2 ACCESS 0
+	ADD OPTION aRot TITLE 'Incluir'     ACTION 'VIEWDEF.contrato.fornecedores.TGCFA001' OPERATION 3 ACCESS 0
+	ADD OPTION aRot TITLE 'Alterar'    	ACTION 'VIEWDEF.contrato.fornecedores.TGCFA001' OPERATION 4 ACCESS 0
+
+Return aRot
+
+/*/{Protheus.doc} MenuDef
+Definição do modelo de dados  
+@type function
+@author Matheus Gratão D'Ávila
+@since 24/04/2025
+/*/
+
+User function ModelDef() as Object
+
+    Local oModel    as Object
+    Local oModPX2   as Object
+    Local oModPB9   as Object
+    Local oModPX7   as Object
+	Local oModPX3   as Object
+	Local oModPX4   as Object
+    Local oModPX6   as Object
+    Local oStPai    as Object	
+    Local oStFilho  as Object
+    Local oStFilho2 as Object	
+    Local oStFilho3 as Object	
+    Local oStFilho4 as Object	
+    Local oStFilho5 as Object	
+    Local oCommit   as Object	  
+    Local aPB9Rel   as Array
+    Local aPX7Rel   as Array
+    Local aPX3Rel   as Array
+    Local aPX4Rel   as Array
+    Local aPX6Rel   as Array
+
+    aPB9Rel := {}
+    aPX7Rel := {}
+    aPX3Rel := {}
+    aPX4Rel := {}
+    aPX6Rel := {}
+
+    oModel  := Nil
+    oModPX2 := Nil
+    oModPX3 := Nil
+    oModPX4 := Nil
+    oModPX6 := Nil
+    oModPX7 := Nil
+    oModPB9 := Nil
+    
+    lActive := .F.
+    oCommit := TGCFA001E():New()
+
+	//Criando o modelo e os relacionamentos
+	oModel := MPFormModel():New('TGCFAM001')
+
+    oStPai     := FWFormStruct(1, 'PX2')
+    oStFilho   := FWFormStruct(1, 'PB9')
+    oStFilho2  := FWFormStruct(1, 'PX7')
+    oStFilho3  := FWFormStruct(1, 'PX3')
+    oStFilho4  := FWFormStruct(1, 'PX4')
+    oStFilho5  := FWFormStruct(1, 'PX6')
+
+    oModel:AddFields('PX2MASTER',/*cOwner*/,oStPai)
+
+    oModel:AddGrid('PB9DETAIL','PX2MASTER',oStFilho, ,  , , , )
+	oModel:AddGrid('PX7DETAIL','PX2MASTER',oStFilho2, ,  , , , )
+	oModel:AddGrid('PX3DETAIL','PX2MASTER',oStFilho3, ,  , , , )
+    oModel:AddGrid('PX4DETAIL','PX2MASTER',oStFilho4, ,  , , , )
+    oModel:AddGrid('PX6DETAIL','PX2MASTER',oStFilho5, ,  , , , )
+
+    //Fazendo o relacionamento entre o Pai e Filho
+	aAdd(aPB9Rel, {'PB9_FILIAL','PX2_FILIAL'})
+	aAdd(aPB9Rel, {'PB9_CONTRA','PX2_CONTRA'})
+
+	aAdd(aPX7Rel, {'PX7_FILIAL','PX2_FILIAL'})
+	aAdd(aPX7Rel, {'PX7_CONTRA','PX2_CONTRA'})
+
+    aAdd(aPX3Rel, {'PX3_FILIAL','PX2_FILIAL'})
+	aAdd(aPX3Rel, {'PX3_CONTRA','PX2_CONTRA'})
+
+	aAdd(aPX4Rel, {'PX4_FILIAL','PX2_FILIAL'})
+	aAdd(aPX4Rel, {'PX4_CONTRA','PX2_CONTRA'})
+
+	aAdd(aPX6Rel, {'PX6_FILIAL','PX2_FILIAL'})
+	aAdd(aPX6Rel, {'PX6_CONTRA','PX2_CONTRA'})
+
+	oModel:SetRelation('PB9DETAIL', aPB9Rel, PB9->(IndexKey(1)))
+	oModel:SetRelation('PX7DETAIL', aPX7Rel, PX7->(IndexKey(1)))
+	oModel:SetRelation('PX3DETAIL', aPX3Rel, PX3->(IndexKey(1)))
+    oModel:SetRelation('PX4DETAIL', aPX4Rel, PX4->(IndexKey(1)))
+    oModel:SetRelation('PX6DETAIL', aPX6Rel, PX6->(IndexKey(1)))
+
+	oModel:SetPrimaryKey({})
+
+	//Setando as descrições
+	oModel:SetDescription("Contratos de Fornecedores")
+
+	oModPX2 := oModel:GetModel('PX2MASTER')
+	oModPX2:SetDescription('Cabeçalho')
+
+	oModPB9 := oModel:GetModel('PB9DETAIL')
+	oModPB9:SetDescription('Combinações Contábeis')
+	oModPB9:SetOptional( .T. )
+
+	oModPX7 := oModel:GetModel('PX7DETAIL')
+	oModPX7:SetDescription('Fornecedores')
+	oModPX7:SetOptional( .F. )
+
+	oModPX3 := oModel:GetModel('PX3DETAIL')
+	oModPX3:SetDescription('Itens')
+	oModPX3:SetOptional( .F. )
+
+	oModPX4 := oModel:GetModel('PX4DETAIL')
+	oModPX4:SetDescription('Empresas Pagadoras')
+	oModPX4:SetOptional( .F. )
+
+	oModPX6 := oModel:GetModel('PX6DETAIL')
+	oModPX6:SetDescription('Usuários')
+	oModPX6:SetOptional( .F. )
+
+	oModel:InstallEvent("TGCFA001E", /*cOwner*/, oCommit)
+    oModel:SetVldActivate( { |oModel| VldActivate(oModel) } )
+
+Return oModel
+
+Static Function VldActivate(oModel)
+
+    lActive := .T.
+
+Return .T.
+
+/*/{Protheus.doc} MenuDef
+Definição da View 
+@type function
+@author Matheus Gratão D'Ávila
+@since 24/04/2025
+/*/ 
+User function ViewDef() as Object
+
+    Local oView     as Object
+    Local oModel    as Object
+    Local oStPai    as Object	
+    Local oStFilho  as Object
+    Local oStFilho2 as Object
+    Local oStFilho3 as Object
+    Local oStFilho4 as Object
+    Local oStFilho5 as Object
+
+    oView  := FwFormView():New()
+    oModel := FwLoadModel("contrato.fornecedores.TGCFA001")
+
+    oStPai    := FWFormStruct(2, 'PX2')
+    oStFilho  := FWFormStruct(2, 'PB9')
+    oStFilho:RemoveField("PB9_CONTRA")
+    oStFilho2 := FWFormStruct(2, 'PX7')
+    oStFilho2:RemoveField("PX7_CONTRA")
+    oStFilho3 := FWFormStruct(2, 'PX3')
+    oStFilho3:RemoveField("PX3_CONTRA")
+    oStFilho4 := FWFormStruct(2, 'PX4')
+    oStFilho4:RemoveField("PX4_CONTRA")
+    oStFilho5 := FWFormStruct(2, 'PX6')
+    oStFilho5:RemoveField("PX6_CONTRA")
+
+    oView:SetModel(oModel)
+
+    oView:AddField('VIEW_PX2', oStPai   , 'PX2MASTER')
+    oView:AddGrid('VIEW_PB9' , oStFilho , 'PB9DETAIL')
+	oView:AddGrid('VIEW_PX7' , oStFilho2, 'PX7DETAIL')
+	oView:AddGrid('VIEW_PX3' , oStFilho3, 'PX3DETAIL')
+    oView:AddGrid('VIEW_PX4' , oStFilho4, 'PX4DETAIL')
+    oView:AddGrid('VIEW_PX6' , oStFilho5, 'PX6DETAIL')
+
+    oView:AddIncrementField("PX3DETAIL", "PX3_ITEM")
+
+	//Setando o dimensionamento de tamanho
+	oView:CreateHorizontalBox('SUPERIOR', 50)
+	oView:CreateHorizontalBox('INFERIOR', 50)
+
+	oView:CreateFolder('PASTA_FILHOS', 'INFERIOR')
+
+    oView:AddSheet('PASTA_FILHOS', 'ABA_FILHO01', "Combinações Contábeis")
+	oView:AddSheet('PASTA_FILHOS', 'ABA_FILHO02', "Fornecedores")
+	oView:AddSheet('PASTA_FILHOS', 'ABA_FILHO03', "Itens")
+	oView:AddSheet('PASTA_FILHOS', 'ABA_FILHO04', "Empresas Pagadoras")
+    oView:AddSheet('PASTA_FILHOS', 'ABA_FILHO05', "Usuários")
+
+	oView:CreateHorizontalBox('ITENS_FILHO01', 100,,, 'PASTA_FILHOS', 'ABA_FILHO01' )
+	oView:CreateHorizontalBox('ITENS_FILHO02', 100,,, 'PASTA_FILHOS', 'ABA_FILHO02' )
+	oView:CreateHorizontalBox('ITENS_FILHO03', 100,,, 'PASTA_FILHOS', 'ABA_FILHO03' )
+    oView:CreateHorizontalBox('ITENS_FILHO04', 100,,, 'PASTA_FILHOS', 'ABA_FILHO04' )
+    oView:CreateHorizontalBox('ITENS_FILHO05', 100,,, 'PASTA_FILHOS', 'ABA_FILHO05' )
+
+    //Amarrando a view com as box
+	oView:SetOwnerView('VIEW_PX2', 'SUPERIOR')
+	oView:SetOwnerView('VIEW_PB9', 'ITENS_FILHO01')
+	oView:SetOwnerView('VIEW_PX7', 'ITENS_FILHO02')
+	oView:SetOwnerView('VIEW_PX3', 'ITENS_FILHO03')
+    oView:SetOwnerView('VIEW_PX4', 'ITENS_FILHO04')
+    oView:SetOwnerView('VIEW_PX6', 'ITENS_FILHO05')
+
+    //Habilitando título
+	oView:EnableTitleView('VIEW_PX2', 'Contratos de Fornecedores')
+    oView:EnableTitleView('VIEW_PB9', 'Combinações Contábeis')
+    oView:EnableTitleView('VIEW_PX7', 'Fornecedores')
+	oView:EnableTitleView('VIEW_PX3', 'Itens')
+	oView:EnableTitleView('VIEW_PX4', 'Empresas Pagadoras')
+    oView:EnableTitleView('VIEW_PX6', 'Usuários')
+
+Return oView

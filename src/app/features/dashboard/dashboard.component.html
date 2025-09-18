@@ -1,0 +1,81 @@
+<po-page-default>
+
+  <div class="page-header">
+    <po-loading-overlay
+      [p-screen-lock]="true"
+      *ngIf="loading()"
+    ></po-loading-overlay>
+
+    <div class="page-header_container po-lg-12">
+      <h1 class="po-lg-12">Bem-vindo Joaquim Martins,</h1>
+      <div class="element"></div>
+
+      <app-indicator-card
+        classSize="po-lg-3"
+        title="Total de Contratos"
+        valueCount="50"
+        value="R$ 32.590,00"
+      ></app-indicator-card>
+      <app-indicator-card
+        classSize="po-lg-3"
+        title="Contratos concluídos"
+        valueCount="25"
+        value="R$ 16.590,00"
+      ></app-indicator-card>
+      <app-indicator-card
+        classSize="po-lg-3"
+        title="Contratos em andamento"
+        valueCount="12"
+        value="R$ 6.590,00"
+      ></app-indicator-card>
+      <app-indicator-card
+        classSize="po-lg-3"
+        title="Contratos próximos a vencer"
+        valueCount="15"
+        value="R$ 4.590,00"
+      ></app-indicator-card>
+    </div>
+  </div>
+
+  <div class="page-content po-lg-12">
+    <po-widget class="po-lg-12 po-mb-4">
+      <div class="page-content_container">
+        <h2 class="po-lg-12" style="padding: 0;">Meus contratos</h2>
+
+        <po-button
+          class="po-lg-auto po-mb-md-2"
+          p-label="Novo contrato"
+          (p-click)="navigateToAddContract()"
+          style="padding: 0;"
+          p-kind="primary"
+          p-icon="an an-plus"
+        ></po-button>
+
+        <app-search-table
+          classSize="po-lg-4 po-mt-sm-2"
+          placeholder="Pesquisar pelo contrato"
+          [search]="onSearchContract"
+        ></app-search-table>
+
+        <po-button
+          class="po-pull-right columns-manager-button"
+          (p-click)="openColumnManager()"
+          p-kind="secondary"
+          p-icon="an an-gear-six"
+          p-tooltip="Gerenciador de colunas"
+          p-tooltip-position="left"
+        ></po-button>
+
+        <po-button
+          class="po-lg-auto po-pull-right"
+          p-kind="secondary"
+          p-icon="an an-download"
+          p-label="Exportar"
+        ></po-button>
+
+        <app-browse #browse [actions]="actions" alias="PX2" [customNavigateView]="['contract-management/contract-item', 'view']" [hideColumnsManager]="true"></app-browse>
+      </div>
+    </po-widget>
+    <div class="po-lg-12">.</div>
+  </div>
+</po-page-default>

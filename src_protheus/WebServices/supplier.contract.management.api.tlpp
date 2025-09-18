@@ -1,0 +1,1027 @@
+#include "tlpp-core.th"
+#include "tlpp-rest.th"
+#Include "TOTVS.CH"
+#Include "Protheus.ch"
+#INCLUDE "TRYEXCEPTION.CH"
+#INCLUDE "PARMTYPE.CH"
+#INCLUDE "TOPCONN.CH"
+namespace tdi.sigacom.supplier.contract.api
+using namespace tdi.sigacom.supplier.contract.util
+
+/*/{Protheus.doc} TdiCOMPrePurchaseOrder()
+    Classe responsavel por receber as requisicoes de Grupo de Produto
+    @type Class
+    @author Cassio Menabue Lima
+    @since 20/09/2024
+    @version 1.0
+/*/
+Class TdiComSupplierContractApi from LongNameClass
+
+	public data oUtil
+	public data  jBody               as object
+	public data  jParams             as object
+	public data  jPathParams         as object
+	public data  cPage               as Character
+	public data  cPageSize           as Character
+	public data  cFilter             as Character
+
+	public method New()
+	Method setError(cError)
+
+	//Tabelas do gestao de contratos de fornecedores
+	@get("/api/tdi/com/supplier/contract/list")
+	public method getPX2()
+	@get("/api/tdi/com/supplier/contract/items")
+	public method getPX3()
+	@get("/api/tdi/com/supplier/contract/companies")
+	public method getPX4()
+	@get("/api/tdi/com/supplier/contract/users")
+	public method getPX6()
+	@get("/api/tdi/com/supplier/contract/suppliers")
+	public method getPX7()
+	@get("/api/tdi/com/supplier/contract/accounting")
+	public method getPB9()
+	@get("/api/tdi/com/supplier/contract/dashboard/widgets")
+	//public method getPPX2()
+	public method getPPX2Mock()
+	//Apis para F3's
+	@get("/api/tdi/com/supplier/contract/f3/paymentconditions")
+	public method getPaymentConditions()
+	@get("/api/tdi/com/supplier/contract/f3/suppliers")
+	public method getSuppliers()
+	@get("/api/tdi/com/supplier/contract/f3/products")
+	public method getProducts()
+	@get("/api/tdi/com/supplier/contract/f3/costcenters")
+	public method getCostCenters()
+	@get("/api/tdi/com/supplier/contract/f3/accountingitems")
+	public method getAccountingItems()
+	@get("/api/tdi/com/supplier/contract/f3/accountingclass")
+	public method getAccountingClass()
+	@get("/api/tdi/com/supplier/contract/f3/companies")
+	public method getCompanies()
+	@get("/api/tdi/com/supplier/contract/f3/branches")
+	public method getBranches()
+	@get("/api/tdi/com/supplier/contract/f3/users")
+	public method getUsers()
+	@get("/api/tdi/com/supplier/contract/f3/zx5")
+	public method getZx5()
+	@get("/api/tdi/com/supplier/contract/f3/sx3/combobox")
+	public method getX3Combo()
+
+	//Manunteção do contratos de fornecedores
+	@Post("/api/tdi/com/supplier/contract")
+	public method PostContract()
+	@Put("/api/tdi/com/supplier/contract")
+	public method PutContract()
+	@Delete("/api/tdi/com/supplier/contract/:contract")
+	public method CancelContract()
+
+	public Method saveData(jBody as Json )
+
+	//@get("/api/tdi/com/supplier/contract/f3/risk")
+	//public method getRisk()
+	//@get("/api/tdi/com/supplier/contract/f3/segments")
+	//public method getSegments()
+	//@get("/api/tdi/com/supplier/contract/f3/status")
+	//public method getStatus()
+	//@get("/api/tdi/com/supplier/contract/f3/adjustmentindex")
+	//public method getAdjustmentIndex()
+	//@get("/api/tdi/com/supplier/contract/f3/typeofrenewal")
+	//public method getTypeOfRenewal()
+	//@get("/api/tdi/com/supplier/contract/f3/renewalstatus")
+	//public method getRenewalStatus()
+	//@get("/api/tdi/com/supplier/contract/f3/renewaltype")
+	//public method getRenewalType()
+	//@get("/api/tdi/com/supplier/contract/f3/renewalperiodicity")
+	//public method getRenewalPeriodicity()
+	//@get("/api/tdi/com/supplier/contract/f3/Reasonforblocking")
+	//public method getReasonForBlocking()
+	//@get("/api/tdi/com/supplier/contract/f3/valuetype")
+	//public method getValueType()
+	//@get("/api/tdi/com/supplier/contract/f3/periodicities")
+	//public method getPeriodicities()
+
+
+EndClass
+
+
+/*/{Protheus.doc} New()
+    Metodo responsavel por instanciar a classe e iniciar variaveis
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 04/06/2025
+    @version 1.0
+/*/
+Method New() class TdiComSupplierContractApi
+	::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+	::jParams   := JsonObject():New()
+	::jPathParams:= JsonObject():New()
+Return Self
+/*/{Protheus.doc} getPX2()
+    Metodo responsavel por retornar os dados da tabela Contrato de Fornecedores
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 04/06/2025
+    @version 1.0
+/*/
+Method getPX2() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'PX2')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+
+Return
+
+/*/{Protheus.doc} getPX3()
+    Metodo responsavel por retornar os dados da tabela Itens de Contrato
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 04/06/2025
+    @version 1.0
+/*/
+Method getPX3() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'PX3')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+
+Return
+
+/*/{Protheus.doc} getPX4()
+    Metodo responsavel por retornar os dados da tabela Empresas Pagadoras
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 04/06/2025
+    @version 1.0
+/*/
+Method getPX4() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'PX4')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+
+Return
+
+/*/{Protheus.doc} getPX6()
+    Metodo responsavel por retornar os dados da tabela Usuários do contrato
+    @type Method
+    @author Wagner Mobile Costa
+    @since 20/06/2025
+    @version 1.0
+/*/
+Method getPX6() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'PX6')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+
+Return
+
+
+/*/{Protheus.doc} getPX7()
+    Metodo responsavel por retornar os dados da tabela Fornecedores do Contrato
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 04/06/2025
+    @version 1.0
+/*/
+Method getPX7() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'PX7')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+
+Return
+
+/*/{Protheus.doc} getPX6()
+    Metodo responsavel por retornar os dados da tabela combinações contabeis
+    @type Method
+    @author Wagner Mobile Costa
+    @since 21/06/2025
+    @version 1.0
+/*/
+Method getPB9() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'PB9')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+
+Return
+
+/*/{Protheus.doc} getPPX2()
+    Metodo responsavel por retornar os dados das widgets da tela Dashboard
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 17/06/2025
+    @version 1.0
+/*/
+Method getPPX2Mock() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetDataGroup(oRest, 'PX2')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+
+/*/{Protheus.doc} getPPX2()
+    Metodo responsavel por retornar os dados das widgets da tela Dashboard
+    @type Method
+    @author Matheus Gratão D'Ávila
+    @since 17/06/2025
+    @version 1.0
+/*/
+/*Method getPPX2() class TdiComSupplierContractApi
+	Local nx
+	Local aFields		:={}
+	Local cQuery     	:= ""
+	Local cWhere		:= ""
+	Local lRet         	:= .T.
+	Local oResponse    	:= JsonObject():New()
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	Local oDataBase		:= Nil
+	Local jQuery       	:= oRest:getQueryRequest()
+	local cFields      	:= If(Empty(jQuery['fields']), Self:oUtil:GetFieldsTable("PX2"), jQuery['fields'])
+	Local cFilter      	:= If(Empty(jQuery['filter']), '', jQuery['filter'])
+	Local cPage        	:= If(Empty(jQuery['page']), '1', jQuery['page'])
+	Local cPageSize    	:= If(Empty(jQuery['pageSize']), '50', jQuery['pageSize'])
+	Local cOrder       	:= If(Empty(jQuery['order']), '', jQuery['order'])
+	Local cGroup       	:= If(Empty(jQuery['group']), '', jQuery['group'])
+	
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+
+	Begin Sequence
+
+		oDataBase := FWAdapterBaseV2():new( 'GET', .T. )
+		oDataBase:setPage(Val(cPage))
+		oDataBase:setPageSize(Val(cPageSize))
+		oDataBase:SetOrderQuery(cOrder)
+		oDataBase:SetUrlFilter({{'FILTER', cFilter}})
+		oDataBase:SetFields( cFields )
+
+		// Mapa de campos retornaveis
+		aFields := StrToKArr2(cFields, ',')
+
+		for nx := 1 to Len(aFields)
+			oDataBase:AddMapFields( aFields[nx]   , aFields[nx]  , .T., .F., { aFields[nx]  , TamSX3( aFields[nx] )[3], TamSX3( aFields[nx] )[1], 0 } )
+		next
+
+		// Dados da Query
+		cQuery := " SELECT #QueryFields# "
+		cQuery += " FROM " + RetSqlName('PX2') + " PX2 "
+		cQuery += " WHERE #QueryWhere#"
+		cWhere := " PX2_FILIAL = '"+ FWxFilial('PX2') +"' AND PX2.D_E_L_E_T_ = ' '"
+		cQuery += cWhere
+		If !Empty(cGroup)
+			cQuery += " GROUP BY " + cGroup
+		Endif
+ 
+		oDataBase:SetQuery(cQuery)
+		oDataBase:SetOrderQuery(cOrder)
+
+		//Executa a consulta, se retornar .T. tudo ocorreu conforme esperado
+		If oDataBase:Execute()
+			// Gera o arquivo Json com o retorno da Query
+			oDataBase:FillGetResponse()
+		EndIf
+
+		If oDataBase:lOk
+			oRest:setResponse(oDataBase:getJSONResponse())
+		Else
+			lRet := .F.
+			cErroBlk := 'Não foi possivel filter os registros!'
+		EndIf
+
+	End Sequence
+
+	ErrorBlock(oException)
+
+	If !lRet
+		oResponse['code'] := 2
+		oResponse['message'] := 'Aconteceu um erro inesperado no serviço!'
+		oResponse['detailedMessage'] := cErroBlk
+		oRest:setFault(oResponse:ToJson())
+	EndIf
+
+Return
+*/
+/*/{Protheus.doc} setError(cError)
+	Metodo responsavel por setar o erro na classe
+	
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	@param cError, Character, Mensagem de erro a ser setada
+	
+	/*/
+Method setError(cError) class TdiComSupplierContractApi
+	Local oResponse    	:= JsonObject():New()
+	oResponse['code'] := 2
+	oResponse['message'] := 'Aconteceu um erro inesperado no serviço!'
+	oResponse['detailedMessage'] := cError
+Return oResponse:ToJson()
+
+/*/{Protheus.doc} getPaymentConditions
+	Method responsavel por retornar as Condições de Pagamento	
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	
+	/*/
+Method getPaymentConditions() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'SE4')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+/*/{Protheus.doc} getSuppliers
+	Method responsavel por retornar os fornecedores
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	
+	/*/
+Method getSuppliers() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'SA2')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+/*/{Protheus.doc} getProducts
+	Method responsavel por retornar os Produtos
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	
+	/*/
+Method getProducts() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'SB1')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+
+/*/{Protheus.doc} getCostCenters
+	Method responsavel por retornar os Centros de Custo
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	
+	/*/
+Method getCostCenters() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'CTT')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+
+/*/{Protheus.doc} getAccountingItems
+	Method responsavel por retornar os Itens Contábeis
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	
+	/*/
+Method getAccountingItems() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'CTD')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+
+/*/{Protheus.doc} getAccountingClass
+	Method responsavel por retornar os Classes Contábeis
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	
+	/*/
+Method getAccountingClass() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'CTH')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+
+/*/{Protheus.doc} getCompanies
+	Method responsavel por retornar os Dados das Empresas
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	
+	/*/
+Method getCompanies() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		jData:=::oUtil:GetCompanyBranches(oRest, 'companies'):ToJson()
+		oRest:setResponse(jData)
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+
+/*/{Protheus.doc} getBranches
+	Method responsavel por retornar os Dados das Filiais
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	
+	/*/
+Method getBranches() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		jData:=::oUtil:GetCompanyBranches(oRest, 'branches'):ToJson()
+		oRest:setResponse(jData)
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+
+/*/{Protheus.doc} getUsers
+metodo responsavel por retornar os Usuarios do Protheus
+	@type Method
+	@author CAssio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	/*/
+Method getUsers() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'SYS_USR')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+
+/*/{Protheus.doc} getZx5
+	Metodo responsavel por retornar os dados da tabela ZX5
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	/*/
+
+
+Method getZx5() Class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		::oUtil:GetData(oRest, 'ZX5')
+		if ::oUtil:isError()
+			oRest:setFault(::oUtil:GetError():ToJson())
+		Else
+			oRest:setResponse(::oUtil:getResponse())
+		EndIF
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+Return
+/*/{Protheus.doc} getX3Combo
+	Metodo responsavel por retornar os dados do combobox do SX3
+	@type Method
+	@author Cassio Menabue Lima
+	@since 19/06/2025
+	@version 1.0
+	/*/
+Method getX3Combo() class TdiComSupplierContractApi
+	Local lRet         	:= .T.
+	Local cErroBlk
+	Local oException   	:= ErrorBlock({|e| cErroBlk := e:Description + e:ErrorStack, lRet := .F., Break(e) })
+	oRest:setKeyHeaderResponse('Content-Type','application/json')
+	Begin Sequence
+		::oUtil :=  tdi.sigacom.supplier.contract.util.TdiComSupplierContractUtil():new()
+		jData:=::oUtil:GetX3Combo(oRest):ToJson()
+		oRest:setResponse(jData)
+		::oUtil:Destroy()
+	End Sequence
+	ErrorBlock(oException)
+
+	If !lRet
+		oRest:setFault(Self:setError(cErroBlk))
+	EndIf
+
+Return
+
+/*/{Protheus.doc} PostContract()
+    Metodo responsavel por realizar a inclusão do contrato
+    @type  Metodo
+    @author Wagner Mobile Costa
+    @since 20/06/2025
+    @version 1.0
+/*/
+Method PostContract() class TdiComSupplierContractApi
+
+Local jResp := ::saveData()
+
+	if (jResp['id'] != '-1')
+		oRest:setResponse(jResp:toJson())
+	Else
+		oRest:setStatusCode(400)
+		oRest:setResponse(jResp:toJson())
+	Endif
+
+	FreeObj(jResp)
+
+Return
+
+/*/{Protheus.doc} PostContract()
+    Metodo responsavel por realizar a alteração do contrato
+    @type  Metodo
+    @author Wagner Mobile Costa
+    @since 20/06/2025
+    @version 1.0
+/*/
+Method PutContract() class TdiComSupplierContractApi
+
+Local jResp := ::saveData()
+
+	if (jResp['id'] != '-1')
+		oRest:setResponse(jResp:toJson())
+	Else
+		oRest:setStatusCode(400)
+		oRest:setResponse(jResp:toJson())
+	Endif
+
+	FreeObj(jResp)
+
+return
+
+/*/{Protheus.doc} cancelContract()
+    Metodo responsavel por realizar o cancelamento do contrato
+    @type  Metodo
+    @author Wagner Mobile Costa
+    @since 20/06/2025
+    @version 1.0
+/*/
+Method cancelContract() class TdiComSupplierContractApi
+
+Local jResp := ::saveData()
+
+	if (jResp['id'] != '-1')
+		oRest:setResponse(jResp:toJson())
+	Else
+		oRest:setStatusCode(400)
+		oRest:setResponse(jResp:toJson())
+	Endif
+
+	FreeObj(jResp)
+
+return 
+
+/*/{Protheus.doc} saveData()
+    Metodo responsavel pela persistencia do contrato
+    @type  Metodo
+    @author Wagner Mobile Costa
+    @since 20/06/2025
+    @version 1.0
+/*/
+Method saveData() class TdiComSupplierContractApi
+
+	Local aArea         := GetArea()
+	Local oError
+	Local cError		:= ""
+	Local aRotAuto      := {}
+	Local nOpcR         := 0
+	Local cKey          := ""
+	Local cMsgFault     := ""
+
+	Local jResponse  	:= JsonObject():New() as json
+	Local jBody 		:= JsonObject():New() as json
+
+	Local cFil          := cFilAnt
+
+	Private lMsErroAuto := .F.
+	Private lMsHelpAuto := .T.
+
+	oRest:setKeyHeaderResponse('Content-type','application/json')
+	jBody:fromJson(oRest:getBodyRequest())
+
+	if jBody == Nil
+		jResponse["id"]:='-1'
+		jResponse["message"]:="não foi enviado o body"
+		return jResponse
+	EndIF
+
+	if !jBody:HasProperty("operation")
+		jResponse["id"]:='-1'
+		jResponse["message"]:="nao foi informado a tag operation no json"
+		return jResponse
+	EndIF
+	nOpcR:=jBody["operation"]
+
+	cKey:=""
+	if jBody:HasProperty("key")
+		cKey:= jBody["key"]
+	EndIF
+	
+	jResponse["log"]:=jBody:toJson()
+
+	TRYEXCEPTION
+		If ! LoadAuto("PX2", jBody, @aRotAuto, .F., @cError)	// Cabecalho
+			jResponse['message']:=cError
+			return jResponse
+		EndIf
+
+		If ! LoadAuto("PB9", jBody, @aRotAuto, .T., @cError) // Combinações Contabeis
+			jResponse['message']:=cError
+			return jResponse
+		EndIf
+
+		If ! LoadAuto("PX7", jBody, @aRotAuto, .T., @cError) // Fornecedores
+			jResponse['message']:=cError
+			return jResponse
+		EndIf
+
+		If ! LoadAuto("PX3", jBody, @aRotAuto, .T., @cError) // Itens
+			jResponse['message']:=cError
+			return jResponse
+		EndIf
+
+		If ! LoadAuto("PX4", jBody, @aRotAuto, .T., @cError) // Empresas Pagadoras
+			jResponse['message']:=cError
+			return jResponse
+		EndIf
+
+		If ! LoadAuto("PX6", jBody, @aRotAuto, .T., @cError) // Usuários
+			jResponse['message']:=cError
+			return jResponse
+		EndIf
+
+		lMsErroAuto := .F.
+		lMsHelpAuto := .T.
+
+		If nOpcR <> 5
+			nOpcR:=3
+		EndIf
+		If  Empty(cKey) .And. nOpcR != 3
+			jResponse["id"]:='-1'
+			jResponse["message"]:="Nao foi informado nenhuma chave do contrato"
+			return jResponse
+		EndIF
+		
+		DbSelectArea("PX2")
+		DbSetOrder(1)
+		If( !Empty(Alltrim(cKey)) .And. PX2->(Dbseek(cKey)))
+			If nOpcR <> 5
+				nOpcR:=4
+			Else // Cancelamento
+				::CancelContract()
+				return jResponse
+			EndIf
+		Else
+			If nOpcR != 3
+				jResponse["id"]:='-1'
+				jResponse["message"]:="Nao foi possivel localizar o contrato n°("+cKey+")"
+				return jResponse
+			EndIF
+		EndIF
+		cFilAnt := cFil
+		FWSM0Util():setSM0PositionBycFilAnt()
+
+		MSExecAuto({|x, y| contrato.fornecedores.U_TGCFA001(x,y)}, aRotAuto, nOpcR)
+
+		If !lMsErroAuto
+			jResponse['id']:=PX2->PX2_FILIAL+"_"+PX2->PX2_CONTRA
+			jResponse['message']:="Operacao do contrato finalizada com sucesso"
+		Else // EM ESTADO DE JOB
+			cTime:= dTos(Date()) + strtran(IncTime(time() ,3,0,0 ),":")
+			cError := MostraErro("/system/contract/", "CONTRACT_"+cTime+".log")
+			jResponse['id']:='-1'
+			jResponse['message']:=cError
+		EndIf
+
+	CATCHEXCEPTION USING oError
+	cMsgFault:=""
+	IF ( ValType( oError ) == "O" )
+		cMsgFault := IF( !Empty( oError:Description )	, oError:Description	, "" )
+		cMsgFault += IF( !Empty( oError:ErrorStack )	, oError:ErrorStack 	, "" )
+	Else
+		cMsgFault:="Erro Desconhecido linha 878 do programa supplier.contract.management.api.tlpp"
+	EndIF
+	jResponse['id']:='-1'
+	jResponse['message']:=cMsgFault
+	IF InTransact()
+		DisarmTransaction()
+	EndIF
+	ENDEXCEPTION
+
+	RestArea(aArea)
+
+return jResponse
+
+Static Function LoadAuto(cTable, jBody, aRotAuto, lItem, cError)
+
+Local aAuto     := {}
+Local aItem     := {}
+Local nTotal    := 0
+Local nItem     := 0
+Local nDetalhe  := 0
+Local aField    := {}
+
+	if jBody:HasProperty(cTable)
+		nTotal := Len(jBody[cTable])
+	EndIF
+
+	For nItem := 1 to nTotal
+		If lItem
+			if (!jBody[cTable][nItem]:HasProperty("item"))
+				Loop
+			EndIF
+
+			aItem:=jBody[cTable][nItem]["item"]
+			If Len(aItem)==0
+				Loop
+			EndIF
+			aItemAuto := {}
+
+			For nDetalhe := 1 To Len(aItem)
+				aField := LoadItem(aItem[nDetalhe], @cError)
+				If Len(aField) > 0
+					aAdd(aItemAuto, aclone(aField) )
+				EndIf
+			Next
+
+			aAdd(aAuto, aclone(aItemAuto) )
+		Else
+			aField := LoadItem(jBody[cTable][nItem], @cError)
+			If Len(aField) > 0
+				aAdd(aAuto, aclone(aField) )
+			EndIf
+		EndIf
+	Next nItem
+
+	Aadd(aRotAuto, AClone(aAuto))
+
+Return If(Empty(cError), .T., .F.)
+
+Static Function LoadItem(jData, cError)
+
+Local cCampo := Upper(jData["field"])
+Local cTipo  := ""
+Local xValue := Nil
+Local aSX3   := FWSX3Util():GetFieldStruct(cCampo)
+
+	If Len(aSX3) == 0
+		If ! Empty(cError)
+			cError += ","
+		EndIF
+		cError := "Campo " + cCampo + " não existe"
+		Return {}
+	EndIf
+
+	cCampo := Alltrim(aSX3[1])
+	cTipo  := aSX3[2]
+	//Valida se o Campo data para converter de string para data
+	if( cTipo =="D")
+		jData["value"]:= STOD(jData["value"])
+	EndIF
+	if(Upper(jData["field"]) =="PX2_FILIAL")
+		cFil:= jData["value"]
+	EndIF
+
+	If cTipo == "D" .or. cTipo == "N"
+		xValue := jData["value"]
+	Else
+		xValue := DecodeUtf8(jData["value"], "cp1252" )
+	EndIF
+
+Return {Upper(jData["field"]), xValue, nil}

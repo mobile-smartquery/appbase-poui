@@ -1,0 +1,13 @@
+<div class="po-toolbar">
+  <div class="toolbar-container">
+    <span class="toolbar-profile-name">Joaquim Martins</span>
+    <po-avatar class="profile-picture" p-src="https://wallpaperaccess.com/full/2330391.jpg"> </po-avatar>
+    <po-button p-label="Sair" (p-click)="logout()" p-kind="secondary" class="po-toolbar-button po-sm-auto" [p-icon]="templateEvApportionment"></po-button>
+
+    <ng-template #templateEvApportionment>
+        <span *ngIf="true" class="po-icon po-icon-exit po-field-icon po-clickable"
+      [class.po-field-icon-disabled]="false">
+        </span>
+    </ng-template>
+  </div>
+</div>

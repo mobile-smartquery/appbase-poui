@@ -1,0 +1,62 @@
+::ng-deep .po-toolbar {
+  z-index: 20;
+  position: relative;
+  height: auto;
+  background-color: white;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.1);
+  width: 100% !important;
+  margin-left: 0 !important;
+}
+
+.toolbar-container {
+  height: 64px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+
+  .toolbar-profile-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #000;
+    margin-right: 20px;
+  }
+
+  .profile-picture {
+    margin-right: 32px;
+  }
+}
+
+::ng-deep .po-avatar.po-avatar-md {
+  width: 40px;
+  height: 40px;
+}
+
+::ng-deep .po-menu-mobile {
+  height: 64px;
+  width: 45px;
+  // left: 0;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.1);
+  z-index: 998;
+  position: fixed;
+  // background-color: #ffffff;
+
+  po-icon {
+    position: absolute;
+    // z-index: 999;
+    top: 20px;
+    left: 12px;
+  }
+}
+
+::ng-deep .toolbar-container .po-button-container {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+::ng-deep .toolbar-container .po-button-container .po-button-label {
+  // margin-left: 0;
+  // margin-right: 15px;
+}

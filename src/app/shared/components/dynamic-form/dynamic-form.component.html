@@ -1,0 +1,47 @@
+
+@if (loading() && formStruct.fields.length === 0) {
+  <div class="loading-container" *ngIf="loading() || formStruct.fields.length === 0">
+    <po-loading-overlay></po-loading-overlay>
+  </div>
+} @else {
+  <div *ngIf="formStruct.fields.length > 0">
+    <form [formGroup]="getFormGroup('FORM' + alias)!">
+      @if (formStruct.sheets.length > 0) {
+        <po-tabs>
+          @for (sheet of formStruct.sheets; track $index; let i5 = $index) {
+            <po-tab [id]="sheet.id" [p-label]="sheet.title" [p-active]="i5 == 0">
+              @for (sheetField of sheet.fields; track $index; let i51 = $index) {
+                @if (sheetField.divider) {
+                  <po-divider [p-label]="sheetField.divider"></po-divider>
+                }
+
+                <app-input-field
+                  [field]="sheetField"
+                  [disabled]="mode === 'view'"
+                  [onChangeField]="onChangeField"
+                  [control]="getFormGroup('FORM' + alias)!.get(sheetField.property)!"
+                >
+                </app-input-field>
+              }
+            </po-tab>
+          }
+        </po-tabs>
+      } @else {
+        @for (field of formStruct.fields; track $index; let i6 = $index) {
+          @if (field.divider) {
+            <po-divider [p-label]="field.divider"></po-divider>
+          }
+          <app-input-field
+            [field]="field"
+            [disabled]="mode === 'view'"
+            [onChangeField]="onChangeField"
+            [control]="getFormGroup('FORM' + alias)!.get(field.property)"
+          >
+          </app-input-field>
+        }
+      }
+    </form>
+  </div>
+
+}
+
