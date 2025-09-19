@@ -2,8 +2,13 @@ import { Routes } from '@angular/router';
 import { CONTRACT_MANAGEMENT_ROUTES } from './features/contract-management/contract-management.routes';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { authGuard } from './core/guards/auth.guard';
+import { LoginComponent } from './features/login/login.component';
 
 export const APP_ROUTES: Routes = [
+     {
+    path: 'login',
+    component: LoginComponent,
+  },
   {
     path: '',
     component: MainLayoutComponent,
