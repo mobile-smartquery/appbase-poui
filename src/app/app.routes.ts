@@ -11,6 +11,11 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
+  },
+  {
+    path: '',
     component: MainLayoutComponent,
     canActivate: [],
     children: [
@@ -32,11 +37,11 @@ export const APP_ROUTES: Routes = [
         path: 'contract-management',
         children: CONTRACT_MANAGEMENT_ROUTES,
       },
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full',
-      },
+      // {
+      //   path: '',
+      //   redirectTo: 'dashboard',
+      //   pathMatch: 'full',
+      // },
     ],
   },
   { path: '**', redirectTo: '', pathMatch: 'full' },
