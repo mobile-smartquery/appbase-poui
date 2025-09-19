@@ -12,25 +12,25 @@
 
       <app-indicator-card
         classSize="po-lg-3"
-        title="Total de Contratos"
+        title="Total de Clientes"
         valueCount="50"
         value="R$ 32.590,00"
       ></app-indicator-card>
       <app-indicator-card
         classSize="po-lg-3"
-        title="Contratos concluídos"
+        title="Total de Notas"
         valueCount="25"
         value="R$ 16.590,00"
       ></app-indicator-card>
       <app-indicator-card
         classSize="po-lg-3"
-        title="Contratos em andamento"
+        title="Lorem ipsum"
         valueCount="12"
         value="R$ 6.590,00"
       ></app-indicator-card>
       <app-indicator-card
         classSize="po-lg-3"
-        title="Contratos próximos a vencer"
+        title="loreum ipsum"
         valueCount="15"
         value="R$ 4.590,00"
       ></app-indicator-card>
@@ -40,11 +40,11 @@
   <div class="page-content po-lg-12">
     <po-widget class="po-lg-12 po-mb-4">
       <div class="page-content_container">
-        <h2 class="po-lg-12" style="padding: 0;">Meus contratos</h2>
+        <h2 class="po-lg-12" style="padding: 0;">Notas</h2>
 
         <po-button
           class="po-lg-auto po-mb-md-2"
-          p-label="Novo contrato"
+          p-label="Nova Nota"
           (p-click)="navigateToAddContract()"
           style="padding: 0;"
           p-kind="primary"
@@ -53,7 +53,7 @@
 
         <app-search-table
           classSize="po-lg-4 po-mt-sm-2"
-          placeholder="Pesquisar pelo contrato"
+          placeholder="Pesquisar pelo número da nota"
           [search]="onSearchContract"
         ></app-search-table>
 
