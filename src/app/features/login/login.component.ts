@@ -1,38 +1,58 @@
 import { Component } from '@angular/core';
-import { SharedModule } from '../../shared/shared.module';
-import { PoModule, PoPageModule } from '@po-ui/ng-components';
-import { PoPageLoginAuthenticationType, PoPageLoginLiterals, PoPageLoginModule } from '@po-ui/ng-templates';
-import { StorageService } from '../../core/services/storage.service';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { PoPageLoginModule, PoPageLogin } from '@po-ui/ng-templates';
+import { PoNotificationService } from '@po-ui/ng-components';
 
 @Component({
+  standalone: true,
   selector: 'app-login',
-  imports: [PoPageModule, PoModule, SharedModule, PoPageLoginModule ],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  imports: [CommonModule, PoPageLoginModule],
+  template: `
+    <po-page-login
+      p-title="Portal de Contratos"
+      p-subtitle="Acesso restrito a usuários autorizados"
+      p-hide-logo="true"
+      [p-literals]="literals"
+      (p-send)="onLogin($event)"
+    >
+    </po-page-login>
+  `,
 })
 export class LoginComponent {
-  readonly authenticationType = PoPageLoginAuthenticationType.Bearer;
-
-  literals: PoPageLoginLiterals = {
-    welcome: 'Bem-vindo ao Sistema de Gestão de Notas',
-    registerUrl: 'Configurações Avançadas',
-    rememberUser: 'Lembrar usuário',
-    loginLabel: 'Usuário',
-    loginPlaceholder: 'Insira seu usuário de acesso',
-    passwordLabel: 'Senha',
-    passwordPlaceholder: 'Insira sua senha de acesso',
+  literals = {
+    welcome: 'Bem-vindo',
+    loginPlaceholder: 'Usuário',
+    passwordPlaceholder: 'Senha',
+    submitLabel: 'Entrar',
   };
-  
 
-  constructor(private storageService: StorageService, private router: Router) { }
+  constructor(private poNotification: PoNotificationService) {}
 
-  login(event: any) {
-    if (event.login === 'admin' && event.password === '123456') {
-      const profile = { name: 'Joaquim Martins'};
-      const profiBase64 = btoa(JSON.stringify(profile));
-      this.storageService.setToken(profiBase64);
-      this.router.navigate(['/dashboard']);
+  async onLogin(form: PoPageLogin) {
+    console.log('🔹 Evento p-send disparado!', form);
+
+    try {
+      const url = `/rest/api/oauth2/v1/token?grant_type=password&username=${encodeURIComponent(
+        form.login
+      )}&password=${encodeURIComponent(form.password)}`;
+
+      const resp = await fetch(url, { method: 'POST' });
+      const raw = await resp.text();
+
+      console.log('🔹 Resposta da API:', raw);
+
+      if (!resp.ok) throw new Error(`Falha ao autenticar (${resp.status})`);
+
+      const data = JSON.parse(raw);
+      const token = data?.access_token ?? '';
+
+      if (!token) throw new Error('Token não retornado pela API');
+
+      this.poNotification.success('Login realizado com sucesso!');
+      console.log('✅ Token:', token);
+    } catch (err: any) {
+      console.error('❌ Erro no login:', err);
+      this.poNotification.error(err?.message || 'Falha ao autenticar');
     }
   }
 }

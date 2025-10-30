@@ -1,24 +1,22 @@
+// src/app/app.routes.ts
 import { Routes } from '@angular/router';
 import { CONTRACT_MANAGEMENT_ROUTES } from './features/contract-management/contract-management.routes';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { authGuard } from './core/guards/auth.guard';
-import { LoginComponent } from './features/login/login.component';
 
 export const APP_ROUTES: Routes = [
-     {
-    path: 'login',
-    component: LoginComponent,
-  },
   {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full',
+    path: 'login',
+    loadComponent: () =>
+      import('./features/login/login.component').then((m) => m.LoginComponent),
   },
+
   {
     path: '',
     component: MainLayoutComponent,
-    canActivate: [],
+    canActivate: [authGuard],
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
         path: 'dashboard',
         loadComponent: () =>
@@ -37,12 +35,8 @@ export const APP_ROUTES: Routes = [
         path: 'contract-management',
         children: CONTRACT_MANAGEMENT_ROUTES,
       },
-      // {
-      //   path: '',
-      //   redirectTo: 'dashboard',
-      //   pathMatch: 'full',
-      // },
     ],
   },
-  { path: '**', redirectTo: '', pathMatch: 'full' },
+
+  { path: '**', redirectTo: 'login', pathMatch: 'full' },
 ];

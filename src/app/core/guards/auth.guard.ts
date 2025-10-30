@@ -2,8 +2,8 @@ import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { StorageService } from '../services/storage.service';
 import { BranchesService } from '../services/branches.service';
-import { catchError, of } from "rxjs";
-import { first } from "rxjs/operators";
+import { catchError, of } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { isEmpty } from 'lodash';
 import { PoNotificationService } from '@po-ui/ng-components';
 
@@ -17,8 +17,9 @@ export const authGuard: CanActivateFn = (route) => {
 
   let isBranchDefined = false;
 
-  // return true; // Permite o acesso à rota
-  return branchesService.getUserBranches()
+  return true; // Permite o acesso à rota
+  return branchesService
+    .getUserBranches()
     .pipe(
       first(),
       catchError(() => of(false))
@@ -27,7 +28,9 @@ export const authGuard: CanActivateFn = (route) => {
     .then((branches: any) => {
       const isBranchDefined = !isEmpty(branches);
       if (!isBranchDefined) {
-        poNotification.warning('Nenhuma filial encontrada para o usuário logado.');
+        poNotification.warning(
+          'Nenhuma filial encontrada para o usuário logado.'
+        );
         router.navigate(['/login']);
         storageService.removeToken();
       }
