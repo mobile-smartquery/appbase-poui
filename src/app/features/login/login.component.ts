@@ -13,7 +13,7 @@ import { PoNotificationService } from '@po-ui/ng-components';
       p-subtitle="Acesso restrito a usuários autorizados"
       p-hide-logo="true"
       [p-literals]="literals"
-      (p-send)="onLogin($event)"
+      (p-login-submit)="onLogin($event)"
     >
     </po-page-login>
   `,
