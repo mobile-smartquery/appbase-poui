@@ -13,3 +13,7 @@ Estrutura de aplicativo - utilizando framework https://po-ui.io/
 ## BackEnd
 
 https://github.com/luizsoliveira/jetstarter-secure-api-postgrest
+
+## https://vercel.com/mobilecostas-projects/app-mobile-smartquery
+
+## https://app-mobile-smartquery.vercel.app/
