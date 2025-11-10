@@ -1,71 +1,62 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StorageService {
+  private TOKEN_KEY = 'auth_token';
 
-  constructor() { }
+  constructor() {}
 
-  // Método para salvar dados no localStorage
+  // LocalStorage -----------------------------
+
   setItem(key: string, value: any): void {
-    const jsonValue = JSON.stringify(value);
-    localStorage.setItem(key, jsonValue);
+    localStorage.setItem(key, JSON.stringify(value));
   }
 
-  // Método para recuperar dados do localStorage
   getItem(key: string): any {
     const value = localStorage.getItem(key);
-    if (value) {
-      return JSON.parse(value);
-    }
-    return null;
+    return value ? JSON.parse(value) : null;
   }
 
-  // Método para remover um item do localStorage
   removeItem(key: string): void {
     localStorage.removeItem(key);
   }
 
-  // Método para limpar todos os dados do localStorage
   clear(): void {
     localStorage.clear();
   }
 
-  // Método para salvar dados no sessionStorage
+  // SessionStorage ---------------------------
+
   setSessionItem(key: string, value: any): void {
-    const jsonValue = JSON.stringify(value);
-    sessionStorage.setItem(key, jsonValue);
+    sessionStorage.setItem(key, JSON.stringify(value));
   }
 
-  // Método para recuperar dados do sessionStorage
   getSessionItem(key: string): any {
     const value = sessionStorage.getItem(key);
-    if (value) {
-      return JSON.parse(value);
-    }
-    return null;
+    return value ? JSON.parse(value) : null;
   }
 
-  setToken(token: string): void {
-    this.setItem('thirdPartyContratToken', token);
-  }
-
-  getToken(): string {
-    return this.getItem('thirdPartyContratToken');
-  }
-
-  removeToken(): void {
-    this.removeItem('thirdPartyContratToken');
-  }
-
-  // Método para remover um item do sessionStorage
   removeSessionItem(key: string): void {
     sessionStorage.removeItem(key);
   }
 
-  // Método para limpar todos os dados do sessionStorage
   clearSession(): void {
     sessionStorage.clear();
+  }
+
+  // TOKEN ------------------------------------
+
+  setToken(token: string): void {
+    this.setItem(this.TOKEN_KEY, token);
+  }
+
+  getToken(): string {
+    return this.getItem(this.TOKEN_KEY);
+  }
+
+  removeToken(): void {
+    this.removeItem(this.TOKEN_KEY);
   }
 }

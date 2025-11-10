@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PoPageLoginModule, PoPageLogin } from '@po-ui/ng-templates';
+import { Router } from '@angular/router';
+
+import { PoPageLoginModule } from '@po-ui/ng-templates';
 import { PoNotificationService } from '@po-ui/ng-components';
+
+import { StorageService } from '../../core/services/storage.service';
 
 @Component({
   standalone: true,
@@ -19,6 +23,10 @@ import { PoNotificationService } from '@po-ui/ng-components';
   `,
 })
 export class LoginComponent {
+  private router = inject(Router);
+  private storage = inject(StorageService);
+  private poNotification = inject(PoNotificationService);
+
   literals = {
     welcome: 'Bem-vindo',
     loginPlaceholder: 'Usuário',
@@ -26,33 +34,36 @@ export class LoginComponent {
     submitLabel: 'Entrar',
   };
 
-  constructor(private poNotification: PoNotificationService) {}
-
-  async onLogin(form: PoPageLogin) {
-    console.log('🔹 Evento p-send disparado!', form);
+  async onLogin(form: any) {
+    console.log('EVENTO RECEBIDO:', form);
 
     try {
-      const url = `/rest/api/oauth2/v1/token?grant_type=password&username=${encodeURIComponent(
+      const base =
+        location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+          ? ''
+          : 'http://protheusawsmobile.ddns.net:8080';
+
+      const url = `${base}/rest/api/oauth2/v1/token?grant_type=password&username=${encodeURIComponent(
         form.login
       )}&password=${encodeURIComponent(form.password)}`;
 
       const resp = await fetch(url, { method: 'POST' });
       const raw = await resp.text();
 
-      console.log('🔹 Resposta da API:', raw);
-
       if (!resp.ok) throw new Error(`Falha ao autenticar (${resp.status})`);
 
       const data = JSON.parse(raw);
       const token = data?.access_token ?? '';
 
-      if (!token) throw new Error('Token não retornado pela API');
+      if (!token) throw new Error('Token não retornado');
 
+      this.storage.setToken(token);
       this.poNotification.success('Login realizado com sucesso!');
-      console.log('✅ Token:', token);
+
+      this.router.navigateByUrl('/dashboard');
     } catch (err: any) {
-      console.error('❌ Erro no login:', err);
-      this.poNotification.error(err?.message || 'Falha ao autenticar');
+      console.error(err);
+      this.poNotification.error(err?.message || 'Erro no login');
     }
   }
 }

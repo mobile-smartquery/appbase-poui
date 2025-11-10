@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiEndpointPath: 'http://ec2-34-226-190-48.compute-1.amazonaws.com:8080/rest/api/tdi/com/supplier',
-  password: '',
-  username: '',
+  apiBaseUrl: 'http://protheusawsmobile.ddns.net:8080/rest',
+  oauthTokenUrl:
+    'http://protheusawsmobile.ddns.net:8080/rest/api/oauth2/v1/token',
 };

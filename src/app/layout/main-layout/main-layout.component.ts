@@ -40,6 +40,8 @@ export class MainLayoutComponent implements OnInit {
       icon: 'an an-squares-four',
       shortLabel: 'Dashboard',
     },
+
+    // tirar o menu do código -- armazenar no Json -- fazer issue
     {
       label: 'Nova Solicitação',
       link: '/contract-management/new-request',
@@ -82,7 +84,6 @@ export class MainLayoutComponent implements OnInit {
     //   label: branch.cgc,
     //   value: branch.code,
     // }));
-
     // this.firstBranch = this.branchesService.selBranch;
   }
 
