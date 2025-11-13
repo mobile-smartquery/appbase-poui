@@ -8,14 +8,12 @@ import {
   PoToolbarAction,
   PoToolbarModule,
 } from '@po-ui/ng-components';
-import { SharedModule } from '../../shared/shared.module';
-import { isEmpty } from 'lodash';
+
 import { Router, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BranchesService } from '../../core/services/branches.service';
-import { split } from 'lodash';
-import { CoreService } from '../../core/services/core.service';
-import { finalize, first } from 'rxjs';
+import { isEmpty, split } from 'lodash';
+import { MenuService } from '../../core/services/menu.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -26,41 +24,13 @@ import { finalize, first } from 'rxjs';
     PoPageModule,
     PoModule,
     RouterOutlet,
-    SharedModule,
     FormsModule,
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss',
 })
 export class MainLayoutComponent implements OnInit {
-  readonly menus: Array<PoMenuItem> = [
-    {
-      label: 'Dashboard',
-      link: '/dashboard',
-      icon: 'an an-squares-four',
-      shortLabel: 'Dashboard',
-    },
-
-    // tirar o menu do código -- armazenar no Json -- fazer issue
-    {
-      label: 'Nova Solicitação',
-      link: '/contract-management/new-request',
-      icon: 'an an-git-pull-request',
-      shortLabel: 'Novo Contrato',
-    },
-    // {
-    //   label: 'Novo Contrato',
-    //   link: '/contract-management/contract-item/add',
-    //   icon: 'an an-plus',
-    //   shortLabel: 'Novo Contrato',
-    // },
-    {
-      label: 'Central de Contratos',
-      link: '/contract-center',
-      icon: 'an an-archive',
-      shortLabel: 'Central de Contratos',
-    },
-  ];
+  menus: Array<PoMenuItem> = [];
 
   actions: Array<PoToolbarAction> = [
     { label: 'IGNORE', icon: 'an an-gear', action: () => {}, visible: false },
@@ -71,25 +41,40 @@ export class MainLayoutComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private branchesService: BranchesService
+    private branchesService: BranchesService,
+    private menuService: MenuService
   ) {}
 
   ngOnInit(): void {
+    this.loadMenu();
     this.onLoadBranches();
   }
 
-  private onLoadBranches() {
-    // this.branchesOptions = this.branchesService.branches.map((branch: any) => (
-    //   {
-    //   label: branch.cgc,
-    //   value: branch.code,
-    // }));
-    // this.firstBranch = this.branchesService.selBranch;
+  private loadMenu(): void {
+    this.menuService.getMenu().subscribe({
+      next: (data) => {
+        console.log('MENU CARREGADO:', data);
+
+        //  GARANTE que o PO-UI receba exatamente o formato PoMenuItem
+        this.menus = data.map((item: any) => ({
+          label: item.label,
+          link: item.link,
+          icon: item.icon,
+          shortLabel: item.shortLabel,
+        }));
+      },
+      error: (err) => {
+        console.error('Erro ao carregar menu:', err);
+      },
+    });
   }
+
+  private onLoadBranches() {}
 
   onChangeBranch(branch: string): void {
     this.branchesService.selBranch = branch;
     this.firstBranch = branch;
+
     if (!isEmpty(split(this.router.url, '?')[1])) {
       this.router.navigate([split(this.router.url, '?')[0]]);
     } else {
@@ -99,7 +84,6 @@ export class MainLayoutComponent implements OnInit {
     }
   }
 
-  // Se esta na tela principal
   isMainScreen() {
     return this.router.url.split('/').length > 2;
   }
