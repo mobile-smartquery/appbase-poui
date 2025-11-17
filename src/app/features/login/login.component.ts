@@ -1,11 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
 import { PoPageLoginModule } from '@po-ui/ng-templates';
 import { PoNotificationService } from '@po-ui/ng-components';
-
 import { StorageService } from '../../core/services/storage.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   standalone: true,
@@ -18,8 +17,7 @@ import { StorageService } from '../../core/services/storage.service';
       p-hide-logo="true"
       [p-literals]="literals"
       (p-login-submit)="onLogin($event)"
-    >
-    </po-page-login>
+    ></po-page-login>
   `,
 })
 export class LoginComponent {
@@ -35,15 +33,10 @@ export class LoginComponent {
   };
 
   async onLogin(form: any) {
-    console.log('EVENTO RECEBIDO:', form);
-
     try {
-      const base =
-        location.hostname === 'localhost' || location.hostname === '127.0.0.1'
-          ? ''
-          : 'http://protheusawsmobile.ddns.net:8080';
+      const base = environment.apiBaseUrl;
 
-      const url = `${base}/rest/api/oauth2/v1/token?grant_type=password&username=${encodeURIComponent(
+      const url = `${base}/api/oauth2/v1/token?grant_type=password&username=${encodeURIComponent(
         form.login
       )}&password=${encodeURIComponent(form.password)}`;
 
@@ -59,7 +52,6 @@ export class LoginComponent {
 
       this.storage.setToken(token);
       this.poNotification.success('Login realizado com sucesso!');
-
       this.router.navigateByUrl('/dashboard');
     } catch (err: any) {
       console.error(err);
