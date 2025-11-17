@@ -1,10 +1,8 @@
 export default async function handler(req, res) {
-  const backendUrl = `http://protheusawsmobile.ddns.net:8080${req.url.replace(
-    "/api",
-    ""
-  )}`;
+  const backendUrl =
+    "http://protheusawsmobile.ddns.net:8080" + req.url.replace("/api", "");
 
-  console.log("➡️ Proxy request to:", backendUrl);
+  console.log("➡ PROXY →", backendUrl);
 
   try {
     const response = await fetch(backendUrl, {
@@ -16,7 +14,7 @@ export default async function handler(req, res) {
     const data = await response.arrayBuffer();
     res.status(response.status).send(Buffer.from(data));
   } catch (err) {
-    console.error("❌ Proxy error:", err);
+    console.error("❌ PROXY ERROR:", err);
     res.status(500).json({ error: "Proxy request failed" });
   }
 }

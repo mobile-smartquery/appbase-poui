@@ -1,14 +1,23 @@
 {
   "version": 2,
+
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/third-party-contracts-portal",
+
   "functions": {
-    "api/*.js": {
+    "api/**/*.js": {
       "runtime": "nodejs18.x"
     }
   },
-  "routes": [
+
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1.js"
+      "source": "/api/(.*)",
+      "destination": "/api/$1.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
