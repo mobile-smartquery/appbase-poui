@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/rest/(.*)",
+      "destination": "http://protheusawsmobile.ddns.net:8080/rest/$1"
+    }
+  ]
+}
