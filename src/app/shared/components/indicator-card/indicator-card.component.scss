@@ -1,0 +1,60 @@
+.indicator-container {
+  display: flex;
+  flex-direction: column;
+  margin: 4px 14px;
+  position: relative;
+
+  .indicator-title,
+  .indicator-value {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 14px;
+  }
+
+  .indicator-value-count {
+    font-weight: 600;
+    color: #045b8f;
+    margin-right: 20px;
+    font-size: 1.5rem;
+  }
+
+  .indicator-value {
+    font-weight: 200;
+  }
+
+  .chart-element {
+    width: 118px;
+    height: 104px;
+    background-image: url('../../../../assets/images/chart-2.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: -30px;
+    overflow-y: hidden;
+    top: -20px;
+  }
+
+  @media (max-width: 768px) {
+
+    .indicator-title,
+    .indicator-value {
+      font-size: 1rem;
+    }
+
+    .indicator-value-count {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+::ng-deep .po-widget .po-container {
+  position:relative;
+}
+
+
+@media (max-width: 960px) {
+  po-widget {
+    margin-bottom: 16px;
+  }
+}

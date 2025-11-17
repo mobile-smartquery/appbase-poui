@@ -1,0 +1,40 @@
+.page-header {
+  h1 {
+    margin: 53px 0;
+    font-size: 2rem;
+  }
+
+  .element {
+    background-image: url("../../../assets/images/elements.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: -15px;
+    right: 70px;
+    width: 265px;
+    height: 265px;
+    z-index: 1;
+
+    @media (max-width: 960px) {
+      display: none;
+    }
+  }
+}
+
+.page-content {
+  margin-top: 40px;
+  .page-content_container {
+    // padding: 0 14px;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 16px 0;
+    }
+  }
+}
+
+.stepper-container {
+  margin-top: 40px;
+}
+

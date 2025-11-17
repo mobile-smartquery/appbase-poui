@@ -1,0 +1,33 @@
+<po-page-default [p-title]="modeTitle" [p-actions]="actions" [p-breadcrumb]="breadcrumb">
+
+
+  <!-- <po-loading-overlay *ngIf="loading()"></po-loading-overlay> -->
+  <po-tabs class="po-lg-12" style="position: relative">
+    <po-tab p-label="Cabeçalho" [p-active]="true">
+      <app-dynamic-form
+        #formPX2
+        alias="PX2"
+        [mode]="formMode"
+      ></app-dynamic-form>
+    </po-tab>
+    <po-tab p-label="Combinações Contábeis">
+      <app-grid-form label="Combinações Contábeis" style="position: static;" #gridPB9 class="po-lg-12 po-mt-2 po-mb-4" [mode]="formMode" alias="PB9"></app-grid-form>
+    </po-tab>
+    <po-tab p-label="Fornecedores">
+      <app-grid-form label="Fornecedores" style="position: static;" #gridPX7 class="po-lg-12 po-mt-2 po-mb-4" [mode]="formMode" alias="PX7"></app-grid-form>
+    </po-tab>
+    <po-tab p-label="Itens">
+      <app-grid-form label="Itens" style="position: static;" #gridPX3 class="po-lg-12 po-mt-2 po-mb-4" [mode]="formMode" alias="PX3"></app-grid-form>
+    </po-tab>
+    <po-tab p-label="Empresas Pagadoras">
+      <app-grid-form label="Itens" style="position: static;" #gridPX4 class="po-lg-12 po-mt-2 po-mb-4" [mode]="formMode" alias="PX4"></app-grid-form>
+    </po-tab>
+    <po-tab p-label="Usuários">
+      <app-grid-form label="Itens" style="position: static;" #gridPX6 class="po-lg-12 po-mt-2 po-mb-4" [mode]="formMode" alias="PX6"></app-grid-form>
+    </po-tab>
+  </po-tabs>
+</po-page-default>
+
+<!-- <po-page-default [p-title]="modeTitle" [p-actions]="actions" [p-breadcrumb]="breadcrumb"> -->
+
+<!-- </po-page-default> -->
