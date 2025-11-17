@@ -1,8 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+
 import { PoPageLoginModule } from '@po-ui/ng-templates';
 import { PoNotificationService } from '@po-ui/ng-components';
+
 import { StorageService } from '../../core/services/storage.service';
 import { environment } from '../../../environments/environment';
 
@@ -33,29 +35,33 @@ export class LoginComponent {
   };
 
   async onLogin(form: any) {
-    try {
-      const base = environment.apiBaseUrl;
+    console.log('EVENTO RECEBIDO:', form);
 
-      const url = `${base}/api/oauth2/v1/token?grant_type=password&username=${encodeURIComponent(
+    try {
+      const url = `${
+        environment.oauthTokenUrl
+      }?grant_type=password&username=${encodeURIComponent(
         form.login
       )}&password=${encodeURIComponent(form.password)}`;
 
+      console.log('➡️ Enviando para:', url);
+
       const resp = await fetch(url, { method: 'POST' });
-      const raw = await resp.text();
 
       if (!resp.ok) throw new Error(`Falha ao autenticar (${resp.status})`);
 
-      const data = JSON.parse(raw);
-      const token = data?.access_token ?? '';
+      const data = await resp.json();
+      const token = data?.access_token;
 
       if (!token) throw new Error('Token não retornado');
 
       this.storage.setToken(token);
       this.poNotification.success('Login realizado com sucesso!');
+
       this.router.navigateByUrl('/dashboard');
     } catch (err: any) {
       console.error(err);
-      this.poNotification.error(err?.message || 'Erro no login');
+      this.poNotification.error(err?.message ?? 'Erro no login');
     }
   }
 }
