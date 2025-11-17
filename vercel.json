@@ -1,8 +1,7 @@
 {
-  "rewrites": [
-    {
-      "source": "/rest/(.*)",
-      "destination": "http://protheusawsmobile.ddns.net:8080/rest/$1"
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs18.x"
     }
-  ]
+  }
 }

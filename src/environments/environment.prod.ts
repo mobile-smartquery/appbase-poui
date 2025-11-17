@@ -6,7 +6,8 @@ export const environment = {
   username: '',
   password: '',
 
-  apiBaseUrl: 'http://protheusawsmobile.ddns.net:8080/rest',
+  apiBaseUrl: '/api/rest',
+
   oauthTokenUrl:
     'http://protheusawsmobile.ddns.net:8080/rest/api/oauth2/v1/token',
 };
