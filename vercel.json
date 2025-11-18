@@ -7,7 +7,7 @@
   "rewrites": [
     {
       "source": "/rest/:path*",
-      "destination": "/api/rest"
+      "destination": "/api/rest/:path*"
     },
     {
       "source": "/(.*)",
