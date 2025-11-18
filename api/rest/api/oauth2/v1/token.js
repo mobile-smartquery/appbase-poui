@@ -5,12 +5,18 @@ export default async function handler(req, res) {
   console.log("➡ PROXY (token):", backendUrl);
 
   try {
-    console.log('➡ PROXY (token) incoming:', { method: req.method, url: req.url });
+    console.log("➡ PROXY (token) incoming:", {
+      method: req.method,
+      url: req.url,
+    });
     // Log content-type / prepared body for debugging (truncate)
     // Note: avoid logging sensitive credentials in production; temporary for debugging.
-    const ct = headers['content-type'] || headers['Content-Type'];
-    console.log('➡ PROXY (token) prepared headers content-type:', ct);
-    console.log('➡ PROXY (token) prepared body length:', body ? String(body).length : 0);
+    const ct = headers["content-type"] || headers["Content-Type"];
+    console.log("➡ PROXY (token) prepared headers content-type:", ct);
+    console.log(
+      "➡ PROXY (token) prepared body length:",
+      body ? String(body).length : 0
+    );
     const headers = { ...(req.headers || {}) };
     // Remove host/content-length to let fetch set them correctly
     delete headers.host;
@@ -47,7 +53,9 @@ export default async function handler(req, res) {
       body,
     });
 
-    console.log('➡ PROXY (token) fetched backend:', { status: response.status });
+    console.log("➡ PROXY (token) fetched backend:", {
+      status: response.status,
+    });
 
     const data = await response.arrayBuffer();
     res.status(response.status).send(Buffer.from(data));
