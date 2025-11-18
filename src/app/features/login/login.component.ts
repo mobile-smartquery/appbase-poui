@@ -38,15 +38,22 @@ export class LoginComponent {
     console.log('EVENTO RECEBIDO:', form);
 
     try {
-      const url = `${
-        environment.oauthTokenUrl
-      }?grant_type=password&username=${encodeURIComponent(
-        form.login
-      )}&password=${encodeURIComponent(form.password)}`;
+      const url = environment.oauthTokenUrl;
 
-      console.log('➡️ Enviando para:', url);
+      // Enviar credenciais no corpo como application/x-www-form-urlencoded
+      const body = new URLSearchParams({
+        grant_type: 'password',
+        username: form.login,
+        password: form.password,
+      }).toString();
 
-      const resp = await fetch(url, { method: 'POST' });
+      console.log('➡️ Enviando POST para:', url, 'body:', body);
+
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body,
+      });
 
       if (!resp.ok) throw new Error(`Falha ao autenticar (${resp.status})`);
 
