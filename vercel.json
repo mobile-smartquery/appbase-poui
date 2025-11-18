@@ -2,7 +2,7 @@
   "version": 2,
 
   "buildCommand": "npm run build",
-  "outputDirectory": "dist/third-party-contracts-portal",
+  "outputDirectory": "dist/third-party-contracts-portal/browser",
 
   "rewrites": [
     {
