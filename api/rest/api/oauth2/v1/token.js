@@ -5,18 +5,6 @@ export default async function handler(req, res) {
   console.log("➡ PROXY (token):", backendUrl);
 
   try {
-    console.log("➡ PROXY (token) incoming:", {
-      method: req.method,
-      url: req.url,
-    });
-    // Log content-type / prepared body for debugging (truncate)
-    // Note: avoid logging sensitive credentials in production; temporary for debugging.
-    const ct = headers["content-type"] || headers["Content-Type"];
-    console.log("➡ PROXY (token) prepared headers content-type:", ct);
-    console.log(
-      "➡ PROXY (token) prepared body length:",
-      body ? String(body).length : 0
-    );
     const headers = { ...(req.headers || {}) };
     // Remove host/content-length to let fetch set them correctly
     delete headers.host;
@@ -45,6 +33,35 @@ export default async function handler(req, res) {
         // fallback: prefer rawBody if available (some runtimes provide it)
         body = req.rawBody || req.body;
       }
+    }
+
+    console.log("➡ PROXY (token) incoming:", {
+      method: req.method,
+      url: req.url,
+    });
+    // Log content-type / prepared body for debugging (truncate)
+    // Note: avoid logging sensitive credentials in production; temporary for debugging.
+    const ct = headers["content-type"] || headers["Content-Type"];
+    console.log("➡ PROXY (token) prepared headers content-type:", ct);
+    console.log(
+      "➡ PROXY (token) prepared body length:",
+      body ? String(body).length : 0
+    );
+
+    // Quick connectivity test to backend origin
+    try {
+      const originTestUrl = "http://protheusawsmobile.ddns.net:8080/";
+      console.log(
+        "➡ PROXY (token) testing origin connectivity:",
+        originTestUrl
+      );
+      const originResp = await fetch(originTestUrl, { method: "GET" });
+      console.log("➡ PROXY (token) origin test status:", originResp.status);
+    } catch (connectErr) {
+      console.error(
+        "❌ PROXY CONNECTIVITY ERROR (origin):",
+        connectErr && connectErr.message ? connectErr.message : connectErr
+      );
     }
 
     const response = await fetch(backendUrl, {
