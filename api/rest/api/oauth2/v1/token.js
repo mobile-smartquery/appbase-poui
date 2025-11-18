@@ -35,39 +35,17 @@ export default async function handler(req, res) {
       }
     }
 
-    // If caller requested a request dump, return prepared headers/body for debugging
-    if ((headers["x-dump-request"] || headers["X-Dump-Request"]) === "1") {
-      return res.status(200).json({ debug: true, headers, body });
-    }
-
     console.log("➡ PROXY (token) incoming:", {
       method: req.method,
       url: req.url,
     });
-    // Log content-type / prepared body for debugging (truncate)
-    // Note: avoid logging sensitive credentials in production; temporary for debugging.
+    // Log content-type / prepared body length (do not log body contents)
     const ct = headers["content-type"] || headers["Content-Type"];
     console.log("➡ PROXY (token) prepared headers content-type:", ct);
     console.log(
       "➡ PROXY (token) prepared body length:",
       body ? String(body).length : 0
     );
-
-    // Quick connectivity test to backend origin
-    try {
-      const originTestUrl = "http://protheusawsmobile.ddns.net:8080/";
-      console.log(
-        "➡ PROXY (token) testing origin connectivity:",
-        originTestUrl
-      );
-      const originResp = await fetch(originTestUrl, { method: "GET" });
-      console.log("➡ PROXY (token) origin test status:", originResp.status);
-    } catch (connectErr) {
-      console.error(
-        "❌ PROXY CONNECTIVITY ERROR (origin):",
-        connectErr && connectErr.message ? connectErr.message : connectErr
-      );
-    }
 
     const response = await fetch(backendUrl, {
       method: req.method,
@@ -86,11 +64,6 @@ export default async function handler(req, res) {
       "❌ PROXY ERROR (token):",
       err && err.message ? err.message : err
     );
-    if (err && err.stack) console.error(err.stack);
-    res.status(500).json({
-      error: "Proxy failed",
-      message: err && err.message ? err.message : String(err),
-      stack: err && err.stack ? err.stack : undefined,
-    });
+    res.status(500).json({ error: "Proxy failed" });
   }
 }
