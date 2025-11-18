@@ -47,7 +47,7 @@ export class LoginComponent {
         password: form.password,
       }).toString();
 
-      console.log('➡️ Enviando POST para:', url, 'body:', body);
+      console.log('➡️ Enviando POST para:', url, 'body length:', body.length);
 
       const resp = await fetch(url, {
         method: 'POST',
