@@ -77,7 +77,17 @@ export default async function handler(req, res) {
     const data = await response.arrayBuffer();
     res.status(response.status).send(Buffer.from(data));
   } catch (err) {
-    console.error("❌ PROXY ERROR (token):", err);
-    res.status(500).json({ error: "Proxy failed" });
+    console.error(
+      "❌ PROXY ERROR (token):",
+      err && err.message ? err.message : err
+    );
+    if (err && err.stack) console.error(err.stack);
+    res
+      .status(500)
+      .json({
+        error: "Proxy failed",
+        message: err && err.message ? err.message : String(err),
+        stack: err && err.stack ? err.stack : undefined,
+      });
   }
 }
