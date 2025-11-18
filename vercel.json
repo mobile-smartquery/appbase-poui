@@ -10,7 +10,7 @@
       "destination": "/api/rest/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api|rest).*)",
       "destination": "/index.html"
     }
   ]
