@@ -6,8 +6,8 @@
 
   "rewrites": [
     {
-      "source": "/rest/(.*)",
-      "destination": "/api/rest.js"
+      "source": "/rest/:path*",
+      "destination": "/api/rest"
     },
     {
       "source": "/(.*)",
