@@ -35,6 +35,11 @@ export default async function handler(req, res) {
       }
     }
 
+    // If caller requested a request dump, return prepared headers/body for debugging
+    if ((headers["x-dump-request"] || headers["X-Dump-Request"]) === "1") {
+      return res.status(200).json({ debug: true, headers, body });
+    }
+
     console.log("➡ PROXY (token) incoming:", {
       method: req.method,
       url: req.url,
@@ -82,12 +87,10 @@ export default async function handler(req, res) {
       err && err.message ? err.message : err
     );
     if (err && err.stack) console.error(err.stack);
-    res
-      .status(500)
-      .json({
-        error: "Proxy failed",
-        message: err && err.message ? err.message : String(err),
-        stack: err && err.stack ? err.stack : undefined,
-      });
+    res.status(500).json({
+      error: "Proxy failed",
+      message: err && err.message ? err.message : String(err),
+      stack: err && err.stack ? err.stack : undefined,
+    });
   }
 }
