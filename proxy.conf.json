@@ -1,0 +1,15 @@
+{
+  "/rest": {
+    "target": "http://protheusawsmobile.ddns.net:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/api/rest": {
+    "target": "http://protheusawsmobile.ddns.net:8080",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/api/rest": "/rest" }
+  }
+}

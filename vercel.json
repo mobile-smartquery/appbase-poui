@@ -1,0 +1,17 @@
+{
+  "version": 2,
+
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/third-party-contracts-portal/browser",
+
+  "rewrites": [
+    {
+       "source": "/rest/:path*",
+      "destination": "http://protheusawsmobile.ddns.net:8080/rest/:path*"
+    },
+    {
+      "source": "/((?!api|rest).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

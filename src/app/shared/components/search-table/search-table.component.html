@@ -1,0 +1,7 @@
+<ng-container>
+  <po-input #searchInput [p-label]="label"  class="{{ classSize }}" (p-change-model)="onChange()" [p-icon]="iconSearch" [(ngModel)]="searchText" [p-placeholder]="placeholder">
+  </po-input>
+  <ng-template #iconSearch>
+    <span class="po-icon po-icon-search po-field-icon po-clickable"></span>
+  </ng-template>
+</ng-container>
