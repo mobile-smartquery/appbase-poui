@@ -11,22 +11,27 @@ export class HttpService {
   constructor(private http: HttpClient) { }
 
   get(endpoint: string, params?: any, headers?: any): Observable<any> {
-    return this.http.get<any>(`${environment.apiEndpointPath}/${endpoint}`, JSON.parse(JSON.stringify({params, headers})));
+    // Use relative paths to enable proxy interception in development
+    const url = environment.production ? `${environment.apiEndpointPath}/${endpoint}` : `/${environment.apiBaseUrl}/${endpoint}`;
+    return this.http.get<any>(url, JSON.parse(JSON.stringify({params, headers})));
   }
 
   post(endpoint: string, body: any, params?: any, headers?: any): Observable<any> {
+    const url = environment.production ? `${environment.apiEndpointPath}/${endpoint}` : `/${environment.apiBaseUrl}/${endpoint}`;
     const options = {
       params,
       headers: headers ? new HttpHeaders(headers) : undefined
     };
-    return this.http.post<any>(`${environment.apiEndpointPath}/${endpoint}`, body, options);
+    return this.http.post<any>(url, body, options);
   }
 
   put(endpoint: string, body: any, params?: any, headers?: any): Observable<any> {
-    return this.http.put<any>(`${environment.apiEndpointPath}/${endpoint}`, body, JSON.parse(JSON.stringify({params, headers})));
+    const url = environment.production ? `${environment.apiEndpointPath}/${endpoint}` : `/${environment.apiBaseUrl}/${endpoint}`;
+    return this.http.put<any>(url, body, JSON.parse(JSON.stringify({params, headers})));
   }
 
   delete(endpoint: string, params?: any, headers?: any): Observable<any> {
-    return this.http.delete<any>(`${environment.apiEndpointPath}/${endpoint}`, JSON.parse(JSON.stringify({params, headers})));
+    const url = environment.production ? `${environment.apiEndpointPath}/${endpoint}` : `/${environment.apiBaseUrl}/${endpoint}`;
+    return this.http.delete<any>(url, JSON.parse(JSON.stringify({params, headers})));
   }
 }
