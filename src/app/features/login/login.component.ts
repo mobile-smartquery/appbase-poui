@@ -14,16 +14,11 @@ import { environment } from '../../../environments/environment';
   imports: [CommonModule, PoPageLoginModule],
   styleUrls: ['./login.component.scss'],
   template: `
-    <div class="custom-login-logo">
-      <img
-        src="assets/images/short-logo-conceitho-black.png"
-        alt="Conceitho Tecnologia"
-      />
-    </div>
     <po-page-login
       p-title="Portal de Contratos"
       p-subtitle="Acesso restrito a usuários autorizados"
-      p-hide-logo="true"
+      p-hide-logo="false"
+      p-logo="assets/images/logo_conceitho_vetor.png"
       [p-literals]="literals"
       (p-login-submit)="onLogin($event)"
     ></po-page-login>

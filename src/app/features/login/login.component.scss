@@ -1,14 +1,2 @@
 /* Adjust PoPageLogin logo position and size */
-.custom-login-logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 12px auto 10px auto; /* slightly below top, just above Bem-vindo */
-}
-
-.custom-login-logo img {
-  width: 280px; /* a bit smaller to avoid forcing scroll */
-  max-width: 70vw;
-  height: auto;
-  display: block;
-}
+/* No component-specific overrides needed for built-in logo now */
