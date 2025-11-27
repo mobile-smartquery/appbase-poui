@@ -16,7 +16,8 @@ import { environment } from '../../../environments/environment';
     <po-page-login
       p-title="Portal de Contratos"
       p-subtitle="Acesso restrito a usuários autorizados"
-      p-hide-logo="true"
+      p-hide-logo="false"
+      p-logo="assets/images/logo-conceitho.png"
       [p-literals]="literals"
       (p-login-submit)="onLogin($event)"
     ></po-page-login>
