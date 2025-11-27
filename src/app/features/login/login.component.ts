@@ -12,6 +12,7 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   selector: 'app-login',
   imports: [CommonModule, PoPageLoginModule],
+  styleUrls: ['./login.component.scss'],
   template: `
     <po-page-login
       p-title="Portal de Contratos"
