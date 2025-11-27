@@ -3,12 +3,12 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 auto 8px auto;
+  margin: 12px auto 10px auto; /* slightly below top, just above Bem-vindo */
 }
 
 .custom-login-logo img {
-  width: 320px;
-  max-width: 80vw;
+  width: 280px; /* a bit smaller to avoid forcing scroll */
+  max-width: 70vw;
   height: auto;
   display: block;
 }

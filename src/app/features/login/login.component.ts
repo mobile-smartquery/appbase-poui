@@ -15,7 +15,10 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['./login.component.scss'],
   template: `
     <div class="custom-login-logo">
-      <img src="assets/images/logo_conceitho_vetor.png" alt="Conceitho Tecnologia" />
+      <img
+        src="assets/images/short-logo-conceitho-black.png"
+        alt="Conceitho Tecnologia"
+      />
     </div>
     <po-page-login
       p-title="Portal de Contratos"
