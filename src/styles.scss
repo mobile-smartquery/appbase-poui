@@ -1,11 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* Global override for PoPageLogin logo position/size */
-/* Built-in PoPageLogin logo: increase size and bring closer to "Bem-vindo" */
+.po-page-login .po-page-login-logo {
+  margin-top: 40px; /* push the logo block down from the very top */
+}
+
+/* Built-in PoPageLogin logo: increase size and sit just above "Bem-vindo" */
 .po-page-login .po-page-login-logo img,
 .po-page-login .po-page-login-header img {
-  width: 340px;
-  max-width: 80vw;
+  width: 360px;
+  max-width: 85vw;
   height: auto;
   display: block;
   margin: 0 auto 4px auto; /* center and just above welcome */
