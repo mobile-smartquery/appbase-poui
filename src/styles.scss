@@ -1,20 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
 
 /* Global override for PoPageLogin logo position/size */
-.po-page-login .po-page-login-logo {
-  margin-top: 40px; /* push the logo block down from the very top */
+/* Stronger selectors targeting the actual custom element <po-page-login> to move logo down */
+po-page-login .po-page-login-logo { /* element selector for higher specificity */
+  margin-top: 100px !important; /* move logo lower from top */
+  margin-bottom: 12px !important; /* space before Bem-vindo */
+  display: flex;
+  justify-content: center;
 }
 
-/* Built-in PoPageLogin logo: increase size and sit just above "Bem-vindo" */
-.po-page-login .po-page-login-logo img,
-.po-page-login .po-page-login-header img {
-  width: 360px;
-  max-width: 85vw;
-  height: auto;
+po-page-login .po-page-login-logo img {
+  width: 360px !important;
+  max-width: 80vw !important;
+  height: auto !important;
   display: block;
-  margin: 0 auto 4px auto; /* center and just above welcome */
 }
 
-.po-page-login .po-page-login-header {
-  margin-bottom: 4px !important; /* reduce gap above "Bem-vindo" */
+/* Optional: tighten title margin if too far apart */
+po-page-login .po-page-login-title {
+  margin-top: 0 !important;
 }
