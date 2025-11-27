@@ -1,8 +1,9 @@
 export const environment = {
   production: true,
-
-  apiEndpointPath: 'http://protheusawsmobile.ddns.net:8080/rest',
-  // In production the frontend calls the serverless proxy on Vercel.
+  // Use Vercel serverless proxy to avoid mixed-content (HTTPS site calling HTTP backend)
+  // All frontend HTTP calls should target `/api/rest/...` which is HTTPS and proxied server-side.
+  apiEndpointPath: '/api/rest',
+  // Keep base as `/rest` for internal composition, but calls go through `apiEndpointPath` above.
   apiBaseUrl: '/rest',
   oauthTokenUrl: '/api/rest/api/oauth2/v1/token',
 
