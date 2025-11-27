@@ -1,8 +1,8 @@
 export const environment = {
   production: false,
 
-  apiEndpointPath: 'http://protheusawsmobile.ddns.net:8080/rest',
   // Development (local) should use the SPA proxy at `/rest`.
+  apiEndpointPath: '/rest',
   apiBaseUrl: '/rest',
 
   // Token URL for local dev (goes through dev proxy)
