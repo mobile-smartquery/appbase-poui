@@ -13,7 +13,6 @@ export default async function handler(req, res) {
       method: req.method || "GET",
       headers: req.headers || {},
     });
-
     console.log(`➡ Backend response status: ${response.status}`);
 
     if (response.ok) {
