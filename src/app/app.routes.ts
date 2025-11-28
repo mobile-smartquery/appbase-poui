@@ -13,6 +13,12 @@ export const APP_ROUTES: Routes = [
 
   {
     path: '',
+    redirectTo: 'login',
+    pathMatch: 'full',
+  },
+
+  {
+    path: '',
     component: MainLayoutComponent,
     canActivate: [authGuard],
     children: [
