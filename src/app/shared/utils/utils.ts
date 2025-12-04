@@ -1,6 +1,9 @@
-import { of } from "rxjs";
-import { CoreService } from "../../core/services/core.service";
-import { PoDatepickerIsoFormat, PoDynamicFormField } from "@po-ui/ng-components";
+import { of } from 'rxjs';
+import { CoreService } from '../../core/services/core.service';
+import {
+  PoDatepickerIsoFormat,
+  PoDynamicFormField,
+} from '@po-ui/ng-components';
 
 export interface CustomDynamicFormField extends PoDynamicFormField {
   existTrigger?: boolean;
@@ -9,7 +12,6 @@ export interface CustomDynamicFormField extends PoDynamicFormField {
 }
 
 export class Utils {
-
   static getType(type: string): string {
     const types = {
       C: 'string',
@@ -21,7 +23,11 @@ export class Utils {
     return types[type as keyof typeof types] || 'string';
   }
 
-  static mapBrowseData(response: any, coreService: CoreService, validLook = false): Array<any> {
+  static mapBrowseData(
+    response: any,
+    coreService: CoreService,
+    validLook = false
+  ): Array<any> {
     return this.mapGridColumns(response, coreService, validLook);
   }
 
@@ -31,23 +37,36 @@ export class Utils {
    * @param coreService Serviço base para interações.
    * @returns Array de colunas mapeadas.
    */
-  static mapGridColumns(response: any, coreService: CoreService, validLook = false): Array<any> {
+  static mapGridColumns(
+    response: any,
+    coreService: CoreService,
+    validLook = false
+  ): Array<any> {
     let currentRowWidth = 0;
 
     let fields = response.struct
       .filter((col: any) => !col.field.includes('_FILIAL'))
       .map((col: any) => {
-        const { gridColumns, gridSmColumns } = this.calculateGridSizes(col, currentRowWidth);
+        const { gridColumns, gridSmColumns } = this.calculateGridSizes(
+          col,
+          currentRowWidth
+        );
 
         if (currentRowWidth + gridColumns > 12) {
           currentRowWidth = 0;
         }
         currentRowWidth += gridColumns;
 
-        const map = this.createColumnMap(col, gridColumns, gridSmColumns, coreService, validLook);
+        const map = this.createColumnMap(
+          col,
+          gridColumns,
+          gridSmColumns,
+          coreService,
+          validLook
+        );
 
         return map;
-      })
+      });
 
     // verifica se foi passando o response.agrups
     if (response.agrups && response.agrups.length > 0) {
@@ -58,9 +77,8 @@ export class Utils {
     return fields;
   }
 
-
   // metodo statico privado para adicionar o agrupador divider
-  static addDivider(fields: any[], agrups: any){
+  static addDivider(fields: any[], agrups: any) {
     const dividers: Map<string, string> = new Map();
 
     // Ordena os fields de acordo com o order do agrupador correspondente
@@ -84,7 +102,9 @@ export class Utils {
       // Adiciona o agrupador divider, não pode estar nos dividers
       if (item.agrup_id && !dividers.has(item.agrup_id)) {
         // Pega o titulo correspondente ao item.agrup_id
-        const agrupTitle = agrups.find((agrup: any) => agrup.id === item.agrup_id)?.title;
+        const agrupTitle = agrups.find(
+          (agrup: any) => agrup.id === item.agrup_id
+        )?.title;
         struct.divider = agrupTitle;
         dividers.set(item.agrup_id, agrupTitle);
       } else if (!item.agrup_id && !dividers.has('Outros')) {
@@ -93,9 +113,7 @@ export class Utils {
       }
       return struct;
     });
-
   }
-
 
   /**
    * Calcula os tamanhos das colunas da grade com base no tamanho e nas opções.
@@ -103,7 +121,10 @@ export class Utils {
    * @param currentRowWidth Largura atual da linha.
    * @returns Tamanhos calculados para gridColumns e gridSmColumns.
    */
-  private static calculateGridSizes(col: any, currentRowWidth: number): { gridColumns: number; gridSmColumns: number } {
+  private static calculateGridSizes(
+    col: any,
+    currentRowWidth: number
+  ): { gridColumns: number; gridSmColumns: number } {
     let gridColumns = 3;
     let gridSmColumns = 6;
 
@@ -111,8 +132,14 @@ export class Utils {
       gridColumns = 6;
       gridSmColumns = 12;
     } else if (col.options.length > 0) {
-      gridColumns = Math.min(12, Math.max(3, Math.ceil(col.options.length / 10)));
-      gridSmColumns = Math.min(12, Math.max(6, Math.ceil(col.options.length / 10)));
+      gridColumns = Math.min(
+        12,
+        Math.max(3, Math.ceil(col.options.length / 10))
+      );
+      gridSmColumns = Math.min(
+        12,
+        Math.max(6, Math.ceil(col.options.length / 10))
+      );
     } else if (col.size > 20) {
       gridColumns = Math.min(12, Math.max(3, Math.ceil(col.size / 10)));
       gridSmColumns = Math.min(12, Math.max(6, Math.ceil(col.size / 10)));
@@ -134,7 +161,13 @@ export class Utils {
    * @param coreService Serviço base para interações.
    * @returns Objeto mapeado da coluna.
    */
-  private static createColumnMap(col: any, gridColumns: number, gridSmColumns: number, coreService: CoreService, validLook = false): any {
+  private static createColumnMap(
+    col: any,
+    gridColumns: number,
+    gridSmColumns: number,
+    coreService: CoreService,
+    validLook = false
+  ): any {
     const map: any = {
       property: col.field || 'defaultField',
       label: col.title || 'Default Title',
@@ -149,7 +182,7 @@ export class Utils {
       gridColumns,
       // isoFormat: PoDatepickerIsoFormat.Basic,
       gridSmColumns,
-      additionalHelpTooltip: col.help || 'UVA',
+      additionalHelpTooltip: col.help || undefined,
       existTrigger: !!col.exist_trigger,
       visible: col.enabled !== undefined ? col.enabled : true,
       disabled: col.editable !== undefined ? !col.editable : false,
@@ -186,18 +219,25 @@ export class Utils {
    * @param col Coluna com detalhes de consulta padrão.
    * @param coreService Serviço base para interações.
    */
-  private static addStandardQueryDetails(map: any, col: any, coreService: CoreService, validLook = false): void {
-
-
+  private static addStandardQueryDetails(
+    map: any,
+    col: any,
+    coreService: CoreService,
+    validLook = false
+  ): void {
     if (col.standard_query_detail) {
-      const indexes: Array<string> = col.standard_query_detail.columns.map((col: any) => col.field);
+      const indexes: Array<string> = col.standard_query_detail.columns.map(
+        (col: any) => col.field
+      );
 
       map.columns = col.standard_query_detail.columns.map((col: any) => ({
         property: String(col.field).toLowerCase(),
         label: col.title,
       }));
 
-      const fieldValue = String(col.standard_query_detail.get_column_value).toLowerCase();
+      const fieldValue = String(
+        col.standard_query_detail.get_column_value
+      ).toLowerCase();
       map.fieldLabel = fieldValue;
       map.fieldValue = fieldValue;
 
@@ -206,10 +246,10 @@ export class Utils {
           return of({ [fieldValue]: value });
         },
         getFilteredItems: (filter: any) => {
-          return coreService.getLookup(
-            col.standard_query_detail.lookup,
-            { ...filter, idx: JSON.stringify(indexes) }
-          );
+          return coreService.getLookup(col.standard_query_detail.lookup, {
+            ...filter,
+            idx: JSON.stringify(indexes),
+          });
         },
       };
 
@@ -223,7 +263,6 @@ export class Utils {
           );
         };
       }
-
     } else {
       console.log('=====================>CONSULTA COMPOSTA SEM DETALHES', col);
     }
@@ -235,7 +274,11 @@ export class Utils {
    * @param coreService Serviço base para interações.
    * @returns Array de campos mapeados.
    */
-  static mapFields(struct: any, coreService: CoreService, validLook = false): Array<any> {
+  static mapFields(
+    struct: any,
+    coreService: CoreService,
+    validLook = false
+  ): Array<any> {
     return Utils.mapGridColumns(struct, coreService, validLook);
   }
 
@@ -245,22 +288,39 @@ export class Utils {
    * @param coreService Serviço base para interações.
    * @returns Array de pastas mapeadas.
    */
-  static mapFolders(response: any, coreService: CoreService, validLook = false): Array<any> {
+  static mapFolders(
+    response: any,
+    coreService: CoreService,
+    validLook = false
+  ): Array<any> {
     const folders = response.folders.map((folder: any) => {
-      const folderFields = response.struct.filter((field: any) => field.folder === folder.id && !field.field.includes('_FILIAL'));
+      const folderFields = response.struct.filter(
+        (field: any) =>
+          field.folder === folder.id && !field.field.includes('_FILIAL')
+      );
       return {
         id: folder.id,
         title: folder.title,
-        fields: Utils.mapFields({...response, struct: folderFields}, coreService, validLook),
+        fields: Utils.mapFields(
+          { ...response, struct: folderFields },
+          coreService,
+          validLook
+        ),
       };
     });
 
-    const otherFields = response.struct.filter((field: any) => !field.folder && !field.field.includes('_FILIAL'));
+    const otherFields = response.struct.filter(
+      (field: any) => !field.folder && !field.field.includes('_FILIAL')
+    );
     if (otherFields.length > 0 && response.folders.length > 0) {
       folders.push({
         id: 'outros',
         title: 'Outros',
-        fields: Utils.mapFields({...response, struct: otherFields}, coreService, validLook),
+        fields: Utils.mapFields(
+          { ...response, struct: otherFields },
+          coreService,
+          validLook
+        ),
       });
     }
 
@@ -273,22 +333,29 @@ export class Utils {
    * @param coreService Serviço base para interações.
    * @returns Objeto contendo campos, pastas e colunas mapeadas.
    */
-  static mapViewDef(response: any, coreService: CoreService, validLook = false): { fields: any[], sheets: any[], columns: any[] } {
-
+  static mapViewDef(
+    response: any,
+    coreService: CoreService,
+    validLook = false
+  ): { fields: any[]; sheets: any[]; columns: any[] } {
     // Remove o campo filial
-    response.struct = response.struct.filter((col: any) => !col.field.includes('_FILIAL'));
+    response.struct = response.struct.filter(
+      (col: any) => !col.field.includes('_FILIAL')
+    );
 
     const fields = this.mapFields(response, coreService, validLook);
     const sheets = this.mapFolders(response, coreService, validLook);
-    const columns = fields
+    const columns = fields;
 
     return { fields, sheets, columns };
   }
-
 }
 
 // função que recebe o evento do keydown e formata o campo do tipo time para o formato HH:mm:ss
-export function formatTimeInput(event: KeyboardEvent, input: HTMLInputElement): void {
+export function formatTimeInput(
+  event: KeyboardEvent,
+  input: HTMLInputElement
+): void {
   const value = input.value.replace(/[^0-9]/g, ''); // Remove caracteres não numéricos
   let formattedValue = '';
 

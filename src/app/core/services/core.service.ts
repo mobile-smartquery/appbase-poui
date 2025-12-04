@@ -164,6 +164,17 @@ export class CoreService {
   }
 
   postContract(body: any): Observable<any> {
+    // Use local mock in localhost
+    if (this.isLocalhost()) {
+      // Simulate success response with mock data
+      return of({
+        id: 'CT' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        status: 'success',
+        message: 'Contrato criado com sucesso',
+        data: body,
+      });
+    }
+
     return this.http.post('contract', body).pipe(
       catchError((error) => {
         console.error('Erro ao criar contrato:', error);
@@ -174,6 +185,19 @@ export class CoreService {
   }
 
   putContract(body: any): Observable<any> {
+    // Use local mock in localhost
+    if (this.isLocalhost()) {
+      // Simulate success response with mock data
+      return of({
+        id:
+          body.id ||
+          'CT' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+        status: 'success',
+        message: 'Contrato atualizado com sucesso',
+        data: body,
+      });
+    }
+
     return this.http.put(`contract`, body).pipe(
       catchError((error) => {
         console.error('Erro ao atualizar contrato:', error);
