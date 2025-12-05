@@ -131,14 +131,14 @@ export class Utils {
     if (col.size > 120) {
       gridColumns = 6;
       gridSmColumns = 12;
-    } else if (col.options.length > 0) {
+    } else if ((col.options || []).length > 0) {
       gridColumns = Math.min(
         12,
-        Math.max(3, Math.ceil(col.options.length / 10))
+        Math.max(3, Math.ceil((col.options || []).length / 10))
       );
       gridSmColumns = Math.min(
         12,
-        Math.max(6, Math.ceil(col.options.length / 10))
+        Math.max(6, Math.ceil((col.options || []).length / 10))
       );
     } else if (col.size > 20) {
       gridColumns = Math.min(12, Math.max(3, Math.ceil(col.size / 10)));
@@ -206,7 +206,7 @@ export class Utils {
       Utils.addStandardQueryDetails(map, col, coreService, validLook);
     }
 
-    if (col.options.length > 0) {
+    if ((col.options || []).length > 0) {
       map.options = col.options;
     }
 
