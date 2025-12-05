@@ -45,7 +45,7 @@ export class Utils {
     let currentRowWidth = 0;
 
     let fields = response.struct
-      .filter((col: any) => !col.field.includes('_FILIAL'))
+      .filter((col: any) => !(col?.field || '').includes('_FILIAL'))
       .map((col: any) => {
         const { gridColumns, gridSmColumns } = this.calculateGridSizes(
           col,
@@ -168,9 +168,12 @@ export class Utils {
     coreService: CoreService,
     validLook = false
   ): any {
+    const safeField = col.field || col.property || 'defaultField';
+    const safeLabel = col.label || col.title || col.field || 'Título';
+
     const map: any = {
-      property: col.field || 'defaultField',
-      label: col.title || 'Default Title',
+      property: safeField,
+      label: safeLabel,
       type: Utils.getType(col.type || 'C'),
       required: !!col.required,
       showRequired: !!col.required,
@@ -296,7 +299,8 @@ export class Utils {
     const folders = response.folders.map((folder: any) => {
       const folderFields = response.struct.filter(
         (field: any) =>
-          field.folder === folder.id && !field.field.includes('_FILIAL')
+          field.folder === folder.id &&
+          !(field?.field || '').includes('_FILIAL')
       );
       return {
         id: folder.id,
@@ -310,7 +314,7 @@ export class Utils {
     });
 
     const otherFields = response.struct.filter(
-      (field: any) => !field.folder && !field.field.includes('_FILIAL')
+      (field: any) => !field.folder && !(field?.field || '').includes('_FILIAL')
     );
     if (otherFields.length > 0 && response.folders.length > 0) {
       folders.push({
@@ -340,7 +344,7 @@ export class Utils {
   ): { fields: any[]; sheets: any[]; columns: any[] } {
     // Remove o campo filial
     response.struct = response.struct.filter(
-      (col: any) => !col.field.includes('_FILIAL')
+      (col: any) => !(col?.field || '').includes('_FILIAL')
     );
 
     const fields = this.mapFields(response, coreService, validLook);

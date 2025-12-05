@@ -73,16 +73,37 @@ export class CoreService {
           : this.getMockStruct(alias);
         const folders = resp?.folders ?? [];
         const agrups = resp?.agrups ?? [];
-        const structNormalized = (struct || []).map((col: any) => ({
-          ...col,
-          title: col?.title ?? col?.label ?? col?.field ?? 'Default Title',
-          label: col?.label ?? col?.title ?? col?.field ?? 'Default Title',
-          options: col?.options ?? [],
-          decimals: col?.decimals ?? col?.decimal ?? 0,
-          enabled: col?.enabled ?? true,
-          editable: col?.editable ?? true,
-          order: col?.order ?? 0,
-        }));
+        const normalizeText = (value?: string) =>
+          typeof value === 'string' && value.trim() !== ''
+            ? value.trim()
+            : undefined;
+
+        const structNormalized = (struct || []).map((col: any) => {
+          const field =
+            normalizeText(col?.field) || normalizeText(col?.alias) || 'FIELD';
+          const title =
+            normalizeText(col?.title) ||
+            normalizeText(col?.label) ||
+            normalizeText(col?.field) ||
+            'Título';
+          const label =
+            normalizeText(col?.label) ||
+            normalizeText(col?.title) ||
+            normalizeText(col?.field) ||
+            'Título';
+
+          return {
+            ...col,
+            field,
+            title,
+            label,
+            options: Array.isArray(col?.options) ? col.options : [],
+            decimals: col?.decimals ?? col?.decimal ?? 0,
+            enabled: col?.enabled ?? true,
+            editable: col?.editable ?? true,
+            order: col?.order ?? 0,
+          };
+        });
         return { struct: structNormalized, folders, agrups };
       }),
       catchError((error) => {
