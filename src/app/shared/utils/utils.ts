@@ -182,6 +182,7 @@ export class Utils {
       virtual: !!col.virtual,
       maxLength: col.size || 50,
       decimalsLength: col.decimals || 0,
+      locale: col.locale || 'pt',
       gridColumns,
       // isoFormat: PoDatepickerIsoFormat.Basic,
       gridSmColumns,
