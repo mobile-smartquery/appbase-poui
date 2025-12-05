@@ -65,13 +65,25 @@ export class CoreService {
       // Ensure shape for consumers
       map((resp: any) => {
         if (Array.isArray(resp)) {
-          return { struct: resp, folders: [], agrups: [] };
+          const struct = resp.length ? resp : this.getMockStruct(alias);
+          return { struct, folders: [], agrups: [] };
         }
-        return {
-          struct: resp?.struct ?? [],
-          folders: resp?.folders ?? [],
-          agrups: resp?.agrups ?? [],
-        };
+        const struct = resp?.struct?.length
+          ? resp.struct
+          : this.getMockStruct(alias);
+        const folders = resp?.folders ?? [];
+        const agrups = resp?.agrups ?? [];
+        const structNormalized = (struct || []).map((col: any) => ({
+          ...col,
+          title: col?.title ?? col?.label ?? col?.field ?? 'Default Title',
+          label: col?.label ?? col?.title ?? col?.field ?? 'Default Title',
+          options: col?.options ?? [],
+          decimals: col?.decimals ?? col?.decimal ?? 0,
+          enabled: col?.enabled ?? true,
+          editable: col?.editable ?? true,
+          order: col?.order ?? 0,
+        }));
+        return { struct: structNormalized, folders, agrups };
       }),
       catchError((error) => {
         console.warn(`API indisponível para struct ${alias}, usando mock`);
