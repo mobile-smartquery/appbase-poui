@@ -3,9 +3,9 @@
 
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist/third-party-contracts-portal/browser",
-  
+
   "framework": null,
-  
+
   "build": {
     "env": {
       "NODE_OPTIONS": "--max-old-space-size=4096"
