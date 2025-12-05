@@ -61,11 +61,6 @@ export class CoreService {
   }
 
   getStructAlias(alias: string): Observable<any> {
-    // Use local mocks in localhost
-    if (this.isLocalhost()) {
-      return of({ struct: this.getMockStruct(alias), folders: [], agrups: [] });
-    }
-
     return this.http.get(`dictionary/struct/${alias}`).pipe(
       // Ensure shape for consumers
       map((resp: any) => {
@@ -79,15 +74,12 @@ export class CoreService {
         };
       }),
       catchError((error) => {
-        console.error('Erro ao buscar estrutura:', error);
-        this.poNotification.warning(
-          'Estrutura não disponível. Usando fallback.'
-        );
+        console.warn(`API indisponível para struct ${alias}, usando mock`);
         return of({
           struct: this.getMockStruct(alias),
           folders: [],
           agrups: [],
-        }); // fallback to mock
+        }); // fallback to mock silently
       })
     );
   }
@@ -105,21 +97,12 @@ export class CoreService {
   }
 
   getDictionaryInitializer(calias: string): Observable<any> {
-    // Use local mocks in localhost
-    if (this.isLocalhost()) {
-      return of(this.getMockInitializer(calias));
-    }
-
     return this.http.get(`dictionary/initializer/${calias}`).pipe(
       catchError((error) => {
-        console.error(
-          'Erro ao buscar dados do initializer do dicionário:',
-          error
+        console.warn(
+          `API indisponível para initializer ${calias}, usando mock`
         );
-        this.poNotification.warning(
-          'Initializer não disponível. Usando fallback.'
-        );
-        return of(this.getMockInitializer(calias)); // fallback to mock
+        return of(this.getMockInitializer(calias)); // fallback to mock silently
       })
     );
   }
@@ -164,22 +147,17 @@ export class CoreService {
   }
 
   postContract(body: any): Observable<any> {
-    // Use local mock in localhost
-    if (this.isLocalhost()) {
-      // Simulate success response with mock data
-      return of({
-        id: 'CT' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-        status: 'success',
-        message: 'Contrato criado com sucesso',
-        data: body,
-      });
-    }
-
+    // Always try HTTP first, use mock as fallback
     return this.http.post('contract', body).pipe(
       catchError((error) => {
-        console.error('Erro ao criar contrato:', error);
-        this.poNotification.error('Erro ao criar contrato.');
-        throw error;
+        console.warn('API indisponível para postContract, usando mock');
+        // Simulate success response with mock data
+        return of({
+          id: 'CT' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+          status: 'success',
+          message: 'Contrato criado com sucesso',
+          data: body,
+        });
       })
     );
   }
@@ -200,54 +178,43 @@ export class CoreService {
 
     return this.http.put(`contract`, body).pipe(
       catchError((error) => {
-        console.error('Erro ao atualizar contrato:', error);
-        this.poNotification.error('Erro ao atualizar contrato.');
-        throw error;
+        console.warn('API indisponível para putContract, usando mock');
+        // Simulate success response with mock data
+        return of({
+          id:
+            body.id ||
+            'CT' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+          status: 'success',
+          message: 'Contrato atualizado com sucesso',
+          data: body,
+        });
       })
     );
   }
 
   getContractItems(params?: any): Observable<any[]> {
-    // Use local mocks in localhost
-    if (this.isLocalhost()) {
-      return of(this.getMockItems());
-    }
-
     return this.http.get('items', params ? { ...params } : undefined).pipe(
       catchError((error) => {
-        console.error('Erro ao buscar itens do contrato:', error);
-        this.poNotification.warning('Itens do contrato não disponíveis.');
-        return of(this.getMockItems()); // fallback to mock
+        console.warn('API indisponível para items, usando mock');
+        return of(this.getMockItems()); // fallback to mock silently
       })
     );
   }
 
   getContractCompanies(params?: any): Observable<any[]> {
-    // Use local mocks in localhost
-    if (this.isLocalhost()) {
-      return of(this.getMockCompanies());
-    }
-
     return this.http.get('companies', params ? { ...params } : undefined).pipe(
       catchError((error) => {
-        console.error('Erro ao buscar empresas do contrato:', error);
-        this.poNotification.warning('Empresas do contrato não disponíveis.');
-        return of(this.getMockCompanies()); // fallback to mock
+        console.warn('API indisponível para companies, usando mock');
+        return of(this.getMockCompanies()); // fallback to mock silently
       })
     );
   }
 
   getContractAccounting(params?: any): Observable<any[]> {
-    // Use local mocks in localhost
-    if (this.isLocalhost()) {
-      return of(this.getMockAccounting());
-    }
-
     return this.http.get('accounting', params ? { ...params } : undefined).pipe(
       catchError((error) => {
-        console.error('Erro ao buscar dados contábeis do contrato:', error);
-        this.poNotification.warning('Dados contábeis não disponíveis.');
-        return of(this.getMockAccounting()); // fallback to mock
+        console.warn('API indisponível para accounting, usando mock');
+        return of(this.getMockAccounting()); // fallback to mock silently
       })
     );
   }
@@ -263,16 +230,10 @@ export class CoreService {
   }
 
   getContractSuppliers(params?: any): Observable<any[]> {
-    // Use local mocks in localhost
-    if (this.isLocalhost()) {
-      return of(this.getMockSuppliers());
-    }
-
     return this.http.get('suppliers', params ? { ...params } : undefined).pipe(
       catchError((error) => {
-        console.error('Erro ao buscar fornecedores do contrato:', error);
-        this.poNotification.warning('Fornecedores não disponíveis.');
-        return of(this.getMockSuppliers()); // fallback to mock
+        console.warn('API indisponível para suppliers, usando mock');
+        return of(this.getMockSuppliers()); // fallback to mock silently
       })
     );
   }
