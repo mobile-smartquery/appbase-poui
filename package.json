@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build --configuration production",
+    "build:vercel": "ng build --configuration production --verbose",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

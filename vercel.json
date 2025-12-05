@@ -1,12 +1,14 @@
 {
   "version": 2,
 
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist/third-party-contracts-portal/browser",
+
+  "framework": null,
 
   "rewrites": [
     {
-       "source": "/rest/:path*",
+      "source": "/rest/:path*",
       "destination": "http://protheusawsmobile.ddns.net:8080/rest/:path*"
     },
     {
