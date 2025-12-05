@@ -1,14 +1,19 @@
 {
   "version": 2,
 
-  "buildCommand": "npm run build:vercel",
+  "buildCommand": "npm install && npm run build:vercel",
   "outputDirectory": "dist/third-party-contracts-portal/browser",
 
   "framework": null,
 
+  "buildCache": {
+    "skipIntrospection": true
+  },
+
   "build": {
     "env": {
-      "NODE_OPTIONS": "--max-old-space-size=4096"
+      "NODE_OPTIONS": "--max-old-space-size=4096",
+      "SKIP_BUILD_CACHE": "true"
     }
   },
 
